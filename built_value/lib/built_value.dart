@@ -137,8 +137,12 @@ class BuiltValueField {
   /// indicates the name is to be taken from the literal field name.
   final String wireName;
 
+  /// The default expression for this value. Encapsulated in a string to allow
+  /// compilation.
+  final String defaultValue;
+
   const BuiltValueField(
-      {this.compare = true, this.serialize = true, this.wireName});
+      {this.compare = true, this.serialize = true, this.wireName, this.defaultValue});
 }
 
 /// Optionally, annotate a Built Value `Serializer` getters with this to

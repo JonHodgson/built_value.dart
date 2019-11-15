@@ -13,6 +13,7 @@ BuiltSet<String> _builtCollectionNames = BuiltSet<String>([
   'BuiltMap',
   'BuiltSet',
   'BuiltSetMultimap',
+  'BuiltSortedList',
 ]);
 
 class DartTypes {

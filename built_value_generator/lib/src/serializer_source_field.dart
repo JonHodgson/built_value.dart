@@ -25,6 +25,7 @@ abstract class SerializerSourceField
     'BuiltMap': 'MapBuilder',
     'BuiltSet': 'SetBuilder',
     'BuiltSetMultimap': 'SetMultimapBuilder',
+        'BuiltSortedList': 'SortedListBuilder',
   });
   BuiltValue get settings;
   ParsedLibraryResult get parsedLibrary;
@@ -198,7 +199,7 @@ abstract class SerializerSourceField
     // checks the generic type and copies if needed.
     String generics;
     if (topLevel && DartTypes.isBuiltCollectionTypeName(bareType)) {
-      if (bareType == 'BuiltList' || bareType == 'BuiltSet') {
+      if (bareType == 'BuiltList' || bareType == 'BuiltSortedList' || bareType == 'BuiltSet') {
         generics = 'dynamic';
       } else if (bareType == 'BuiltMap' ||
           bareType == 'BuiltListMultimap' ||

@@ -19,6 +19,7 @@ import 'src/built_list_serializer.dart';
 import 'src/built_map_serializer.dart';
 import 'src/built_set_multimap_serializer.dart';
 import 'src/built_set_serializer.dart';
+import 'src/built_sorted_list_serializer.dart';
 import 'src/double_serializer.dart';
 import 'src/int_serializer.dart';
 import 'src/regexp_serializer.dart';
@@ -61,6 +62,7 @@ abstract class Serializers {
           ..add(BuiltMapSerializer())
           ..add(BuiltSetSerializer())
           ..add(BuiltSetMultimapSerializer())
+          ..add(BuiltSortedListSerializer())
           ..add(DateTimeSerializer())
           ..add(DoubleSerializer())
           ..add(DurationSerializer())

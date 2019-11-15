@@ -9,6 +9,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value_generator/src/dart_types.dart';
 import 'package:built_value_generator/src/fixes.dart';
 import 'package:built_value_generator/src/memoized_getter.dart';
 import 'package:built_value_generator/src/value_source_field.dart';
@@ -612,10 +613,18 @@ abstract class ValueSourceClass
       result.write('$implName._() : super._()');
     } else {
       result.write('$implName._({');
-      result.write(fields.map((field) => 'this.${field.name}').join(', '));
-      result.write('}) : super._()');
+      result.write(fields.map((field) => (field.builtValueField.defaultValue == null ? 'this.${field.name}' : '${field.name}')).join(', '));
+      result.write('}) : ');
     }
-    var requiredFields = fields.where((field) => !field.isNullable);
+    
+    var defaultFields = fields.where((field) => field.builtValueField.defaultValue != null);
+    for (var field in defaultFields) {
+      result.writeln('this.${field.name} = ${field.name} ?? ${field.builtValueField.defaultValue},');
+    }
+
+    result.write('super._()');
+    
+    var requiredFields = fields.where((field) => !field.isNullable && field.builtValueField.defaultValue == null);
     if (requiredFields.isEmpty && genericParameters.isEmpty) {
       result.writeln(';');
     } else {
@@ -779,9 +788,22 @@ abstract class ValueSourceClass
     result.writeln();
 
     if (hasBuilder) {
-      result.writeln('${implName}Builder() : super._();');
+      result.writeln('${implName}Builder() : super._()');
     } else {
-      result.writeln('${name}Builder();');
+      result.writeln('${name}Builder()');
+    }
+    
+    var defaultFields = fields.where((field) => field.builtValueField.defaultValue != null);
+    if (defaultFields.isEmpty) {
+      result.writeln(';');
+    } else {
+      var prefix = hasBuilder ? 'super' : 'this';
+      result.writeln('{');
+      for (var field in defaultFields) {
+        String toBuilder = DartTypes.isBuilt(field.element.getter.returnType) ? '.toBuilder()' : '';
+        result.writeln('${prefix}.${field.name} = ${field.builtValueField.defaultValue}${toBuilder};');
+      }
+      result.writeln('}');
     }
     result.writeln('');
 
