@@ -162,6 +162,8 @@ abstract class ValueSourceField
     for (var field in collectFields(classElement)) {
       if (!field.isStatic &&
           field.getter != null &&
+          !field.getter.metadata.any(
+                  (metadata) => metadataToStringValue(metadata) == 'memoized') &&
           (field.getter.isAbstract || field.getter.isSynthetic)) {
         final builderField = builderClassElement?.getField(field.name);
         result.add(

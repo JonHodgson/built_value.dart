@@ -20,7 +20,6 @@ abstract class MemoizedGetter
     return classElement.fields
         .where((field) =>
             field.getter != null &&
-            !field.getter.isAbstract &&
             field.getter.metadata.any(
                 (metadata) => metadataToStringValue(metadata) == 'memoized'))
         .map((field) => MemoizedGetter((b) => b
