@@ -16,6 +16,8 @@ import 'package:built_value_generator/src/value_source_field.dart';
 import 'package:quiver/iterables.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'dart_types.dart';
+
 part 'value_source_class.g.dart';
 
 const String _importWithSingleQuotes =
@@ -73,9 +75,11 @@ abstract class ValueSourceClass
     // This means it _is_ allowed to have concrete getters as well as
     // concrete and abstract methods.
 
-    for (var supertype in [element.supertype]
-      ..addAll(element.supertype.element.allSupertypes)) {
-      if (supertype.displayName == 'Object') continue;
+    for (var supertype in [
+      element.supertype,
+      ...element.supertype.element.allSupertypes
+    ]) {
+      if (DartTypes.getName(supertype) == 'Object') continue;
 
       // Base class must be abstract.
       if (!supertype.element.isAbstract) return false;
@@ -105,7 +109,7 @@ abstract class ValueSourceClass
   BuiltValue get settings {
     var annotations = element.metadata
         .map((annotation) => annotation.computeConstantValue())
-        .where((value) => value?.type?.displayName == 'BuiltValue');
+        .where((value) => DartTypes.getName(value?.type) == 'BuiltValue');
     if (annotations.isEmpty) return const BuiltValue();
     var annotation = annotations.single;
     // If a field does not exist, that means an old `built_value` version; use
@@ -123,6 +127,10 @@ abstract class ValueSourceClass
         generateBuilderOnSetField:
             annotation.getField('generateBuilderOnSetField')?.toBoolValue() ??
                 false,
+        defaultCompare:
+            annotation.getField('defaultCompare')?.toBoolValue() ?? true,
+        defaultSerialize:
+            annotation.getField('defaultSerialize')?.toBoolValue() ?? true,
         wireName: annotation.getField('wireName')?.toStringValue());
   }
 
@@ -132,8 +140,11 @@ abstract class ValueSourceClass
 
   @memoized
   BuiltList<String> get genericBounds =>
-      BuiltList<String>(element.typeParameters
-          .map((element) => (element.bound ?? '').toString()));
+      BuiltList<String>(element.typeParameters.map((element) {
+        var bound = element.bound;
+        if (bound == null) return '';
+        return DartTypes.getName(bound);
+      }));
 
   @memoized
   ClassDeclaration get classDeclaration {
@@ -145,12 +156,25 @@ abstract class ValueSourceClass
   bool get hasBuilder => builderElement != null;
 
   @memoized
+  bool get hasBuilderInitializer => builderInitializer != null;
+
+  @memoized
+  MethodElement get builderInitializer =>
+      element.getMethod('_initializeBuilder');
+
+  @memoized
+  bool get hasBuilderFinalizer => builderFinalizer != null;
+
+  @memoized
+  MethodElement get builderFinalizer => element.getMethod('_finalizeBuilder');
+
+  @memoized
   String get builderParameters {
     return builderElement.allSupertypes
         .where((interfaceType) => interfaceType.name == 'Builder')
         .single
         .typeArguments
-        .map((element) => element.displayName)
+        .map((type) => DartTypes.getName(type))
         .join(', ');
   }
 
@@ -245,7 +269,7 @@ abstract class ValueSourceClass
     ..addAll(element.interfaces
         .where((interface) => needsBuiltValue(interface.element))
         .map((interface) {
-      final displayName = interface.displayName;
+      final displayName = DartTypes.getName(interface);
       if (!displayName.contains('<')) return displayName + 'Builder';
       final index = displayName.indexOf('<');
       return displayName.substring(0, index) +
@@ -279,7 +303,8 @@ abstract class ValueSourceClass
                 .any((interfaceType) => interfaceType.name == 'Built') ||
             classElement.metadata
                 .map((annotation) => annotation.computeConstantValue())
-                .any((value) => value?.type?.displayName == 'BuiltValue'));
+                .any(
+                    (value) => DartTypes.getName(value?.type) == 'BuiltValue'));
   }
 
   Iterable<GeneratorError> computeErrors() {
@@ -408,6 +433,43 @@ abstract class ValueSourceClass
     }
 
     if (settings.instantiable) {
+      if (hasBuilderInitializer) {
+        if (!builderInitializer.isStatic ||
+            !builderInitializer.returnType.isVoid ||
+            builderInitializer.parameters.length != 1 ||
+            parsedLibrary
+                .getElementDeclaration(builderInitializer.parameters[0])
+                .node is! SimpleFormalParameter ||
+            DartTypes.stripGenerics((parsedLibrary
+                        .getElementDeclaration(builderInitializer.parameters[0])
+                        .node as SimpleFormalParameter)
+                    .type
+                    ?.toSource()) !=
+                '${name}Builder') {
+          result.add(GeneratorError((b) => b
+            ..message = 'Fix _initializeBuilder signature: '
+                'static void _initializeBuilder(${name}Builder b)'));
+        }
+      }
+      if (hasBuilderFinalizer) {
+        if (!builderFinalizer.isStatic ||
+            !builderFinalizer.returnType.isVoid ||
+            builderFinalizer.parameters.length != 1 ||
+            parsedLibrary
+                .getElementDeclaration(builderFinalizer.parameters[0])
+                .node is! SimpleFormalParameter ||
+            DartTypes.stripGenerics((parsedLibrary
+                        .getElementDeclaration(builderFinalizer.parameters[0])
+                        .node as SimpleFormalParameter)
+                    .type
+                    ?.toSource()) !=
+                '${name}Builder') {
+          result.add(GeneratorError((b) => b
+            ..message = 'Fix _finalizeBuilder signature: '
+                'static void _finalizeBuilder(${name}Builder b)'));
+        }
+      }
+
       final expectedConstructor = '$name._()';
       if (valueClassConstructors.isEmpty) {
         result.add(GeneratorError((b) => b
@@ -616,14 +678,18 @@ abstract class ValueSourceClass
       result.write(fields.map((field) => (field.builtValueField.defaultValue == null ? 'this.${field.name}' : '${field.name}')).join(', '));
       result.write('}) : ');
     }
-    
+
     var defaultFields = fields.where((field) => field.builtValueField.defaultValue != null);
-    for (var field in defaultFields) {
-      result.writeln('this.${field.name} = ${field.name} ?? ${field.builtValueField.defaultValue},');
+    if (defaultFields.isNotEmpty){
+      result.writeln();
+      for (var field in defaultFields) {
+        result.writeln('// ignore: unnecessary_this');
+        result.writeln('this.${field.name} = ${field.name} ?? ${field.builtValueField.defaultValue},');
+      }
     }
 
     result.write('super._()');
-    
+
     var requiredFields = fields.where((field) => !field.isNullable && field.builtValueField.defaultValue == null);
     if (requiredFields.isEmpty && genericParameters.isEmpty) {
       result.writeln(';');
@@ -688,7 +754,7 @@ abstract class ValueSourceClass
         result.writeln(fields
             .map((field) => "..add('${field.name}',  ${field.name})")
             .join(''));
-        result.writeln(").toString();");
+        result.writeln(').toString();');
       }
       result.writeln('}');
       result.writeln();
@@ -716,7 +782,7 @@ abstract class ValueSourceClass
     if (hasBuilder) {
       for (var field in fields) {
         final type = field.typeInCompilationUnit(compilationUnit);
-        final typeInBuilder = field.typeInBuilder(compilationUnit);
+        final typeInBuilder = field.builderElementTypeWithPrefix;
         final name = field.name;
 
         if (field.isNestedBuilder) {
@@ -792,18 +858,23 @@ abstract class ValueSourceClass
     } else {
       result.writeln('${name}Builder()');
     }
-    
+
     var defaultFields = fields.where((field) => field.builtValueField.defaultValue != null);
-    if (defaultFields.isEmpty) {
-      result.writeln(';');
-    } else {
+    if (defaultFields.isNotEmpty) {
       var prefix = hasBuilder ? 'super' : 'this';
       result.writeln('{');
       for (var field in defaultFields) {
-        String toBuilder = DartTypes.isBuilt(field.element.getter.returnType) ? '.toBuilder()' : '';
+        var toBuilder = DartTypes.isBuilt(field.element.getter.returnType) ? '.toBuilder()' : '';
+        result.writeln('// ignore: unnecessary_this');
         result.writeln('${prefix}.${field.name} = ${field.builtValueField.defaultValue}${toBuilder};');
       }
       result.writeln('}');
+    } else if (hasBuilderInitializer) {
+      result.writeln('{');
+      result.writeln('$name._initializeBuilder(this);');
+      result.writeln('}');
+    } else {
+      result.writeln(';');
     }
     result.writeln('');
 
@@ -856,6 +927,10 @@ abstract class ValueSourceClass
 
     result.writeln('@override');
     result.writeln('$implName$_generics build() {');
+
+    if (hasBuilderFinalizer) {
+      result.writeln('$name._finalizeBuilder(this);');
+    }
 
     // Construct a map from field to how it's built. If it's a normal field,
     // this is just the field name; if it's a nested builder, this is an
@@ -935,8 +1010,10 @@ abstract class ValueSourceClass
   String _generateEqualsAndHashcode({bool forBuilder = false}) {
     var result = StringBuffer();
 
-    var comparedFields =
-        fields.where((field) => field.builtValueField.compare).toList();
+    var comparedFields = fields
+        .where(
+            (field) => field.builtValueField.compare ?? settings.defaultCompare)
+        .toList();
     var comparedFunctionFields =
         comparedFields.where((field) => field.isFunctionType).toList();
     result.writeln('@override');
@@ -949,11 +1026,13 @@ abstract class ValueSourceClass
     result.writeln('  return other is $name${forBuilder ? 'Builder' : ''}');
     if (comparedFields.isNotEmpty) {
       result.writeln('&&');
-      result.writeln(comparedFields
-          .map((field) => field.isFunctionType
-              ? '${field.name} == _\$dynamicOther.${field.name}'
-              : '${field.name} == other.${field.name}')
-          .join('&&'));
+      result.writeln(comparedFields.map((field) {
+        var nameOrThisDotName =
+            field.name == 'other' ? 'this.other' : field.name;
+        return field.isFunctionType
+            ? '$nameOrThisDotName == _\$dynamicOther.${field.name}'
+            : '$nameOrThisDotName == other.${field.name}';
+      }).join('&&'));
     }
     result.writeln(';');
     result.writeln('}');
@@ -990,10 +1069,16 @@ abstract class ValueSourceClass
     } else {
       // The "Built" interface has been omitted to work around dart2js issue
       // https://github.com/dart-lang/sdk/issues/14729. So, we can't implement
-      // "Builder". Add the methods explicitly.
-      result.writeln('abstract class ${name}Builder$_boundedGenerics {');
+      // "Builder". Add the methods explicitly. We can however implement any
+      // other built_value interfaces.
+      var interfaces = builderImplements.skip(1).toList();
+      result.writeln('abstract class ${name}Builder$_boundedGenerics '
+          '${interfaces.isEmpty ? '' : 'implements ' + interfaces.join(', ')}'
+          '{');
 
-      result.writeln('void replace($name$_generics other);');
+      // Add `covariant` if we're implementing one or more parent builders.
+      result.writeln('void replace(${interfaces.isEmpty ? '' : 'covariant '}'
+          '$name$_generics other);');
       result.writeln(
           'void update(void Function(${name}Builder$_generics) updates);');
     }

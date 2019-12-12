@@ -525,5 +525,110 @@ abstract class CustomToStringValue extends Object
 }
 
 mixin CustomToString {
+  @override
   String toString() => 'custom';
+}
+
+// Check that a field can be called `other`.
+abstract class OtherValue implements Built<OtherValue, OtherValueBuilder> {
+  static Serializer<OtherValue> get serializer => _$otherValueSerializer;
+
+  int get other;
+
+  factory OtherValue([void Function(OtherValueBuilder) updates]) = _$OtherValue;
+  OtherValue._();
+}
+
+@BuiltValue(defaultCompare: false, defaultSerialize: false)
+abstract class DefaultsForFieldSettingsValue
+    implements
+        Built<DefaultsForFieldSettingsValue,
+            DefaultsForFieldSettingsValueBuilder> {
+  static Serializer<DefaultsForFieldSettingsValue> get serializer =>
+      _$defaultsForFieldSettingsValueSerializer;
+
+  int get ignored;
+
+  @BuiltValueField(compare: true)
+  int get compared;
+
+  @BuiltValueField(serialize: true)
+  int get serialized;
+
+  factory DefaultsForFieldSettingsValue(
+          [void Function(DefaultsForFieldSettingsValueBuilder) updates]) =
+      _$DefaultsForFieldSettingsValue;
+
+  DefaultsForFieldSettingsValue._();
+}
+
+abstract class ValueWithBuilderInitializer
+    implements
+        Built<ValueWithBuilderInitializer, ValueWithBuilderInitializerBuilder> {
+  static Serializer<ValueWithBuilderInitializer> get serializer =>
+      _$valueWithBuilderInitializerSerializer;
+
+  static void _initializeBuilder(ValueWithBuilderInitializerBuilder b) => b
+    ..anIntWithDefault = 7
+    ..nullableIntWithDefault = 8
+    ..nestedValueWithDefault.anInt = 9
+    ..nullableNestedValueWithDefault.anInt = 10;
+
+  int get anInt;
+  int get anIntWithDefault;
+  @nullable
+  int get nullableInt;
+  @nullable
+  int get nullableIntWithDefault;
+
+  SimpleValue get nestedValue;
+  SimpleValue get nestedValueWithDefault;
+  @nullable
+  SimpleValue get nullableNestedValue;
+  @nullable
+  SimpleValue get nullableNestedValueWithDefault;
+
+  factory ValueWithBuilderInitializer(
+          [void Function(ValueWithBuilderInitializerBuilder) updates]) =
+      _$ValueWithBuilderInitializer;
+  ValueWithBuilderInitializer._();
+}
+
+abstract class ValueWithBuilderFinalizer
+    implements
+        Built<ValueWithBuilderFinalizer, ValueWithBuilderFinalizerBuilder> {
+  static Serializer<ValueWithBuilderFinalizer> get serializer =>
+      _$valueWithBuilderFinalizerSerializer;
+
+  /// Build hook forcing [anInt] to be odd.
+  static void _finalizeBuilder(ValueWithBuilderFinalizerBuilder b) {
+    if (b.anInt.isEven) ++b.anInt;
+  }
+
+  int get anInt;
+
+  factory ValueWithBuilderFinalizer(
+          [void Function(ValueWithBuilderFinalizerBuilder) updates]) =
+      _$ValueWithBuilderFinalizer;
+  ValueWithBuilderFinalizer._();
+}
+
+abstract class ValueWithGenericBuilderInitializer<T>
+    implements
+        Built<ValueWithGenericBuilderInitializer<T>,
+            ValueWithGenericBuilderInitializerBuilder<T>> {
+  static void _initializeBuilder<TT>(
+      ValueWithGenericBuilderInitializerBuilder<TT> b) {
+    if (TT == int) {
+      b.value = 42 as TT;
+    }
+  }
+
+  @nullable
+  T get value;
+
+  factory ValueWithGenericBuilderInitializer(
+      [void Function(ValueWithGenericBuilderInitializerBuilder<T>)
+          updates]) = _$ValueWithGenericBuilderInitializer<T>;
+  ValueWithGenericBuilderInitializer._();
 }

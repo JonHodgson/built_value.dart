@@ -95,7 +95,7 @@ abstract class ValueSourceField
   BuiltValueField get builtValueField {
     var annotations = element.getter.metadata
         .map((annotation) => annotation.computeConstantValue())
-        .where((value) => value?.type?.displayName == 'BuiltValueField');
+        .where((value) => DartTypes.getName(value?.type) == 'BuiltValueField');
     if (annotations.isEmpty) return const BuiltValueField();
     var annotation = annotations.single;
     return BuiltValueField(
@@ -123,10 +123,11 @@ abstract class ValueSourceField
   @memoized
   String get buildElementType {
     // Try to get a resolved type first, it's faster.
-    var result = builderElement.getter?.returnType?.displayName;
+    var result = DartTypes.getName(builderElement.getter?.returnType);
     if (result != null && result != 'dynamic') return result;
-    // Go via AST to allow use of unresolvable types not yet generated.
-    return parsedLibrary
+    // Go via AST to allow use of unresolvable types not yet generated;
+    // this includes generated Builder types.
+    result = parsedLibrary
             .getElementDeclaration(builderElement)
             ?.node
             ?.parent
@@ -134,6 +135,34 @@ abstract class ValueSourceField
             ?.first
             .toString() ??
         'dynamic';
+    // If we went via the AST there may be an import prefix, but we don't
+    // want one here. Strip it off.
+    if (result.contains('.')) {
+      result = result.substring(result.indexOf('.') + 1);
+    }
+    return result;
+  }
+
+  /// The [builderElementType] plus any import prefix.
+  @memoized
+  String get builderElementTypeWithPrefix {
+    // If it's a real field, it's a [VariableDeclaration] which is guaranteed
+    // to have parent node [VariableDeclarationList] giving the type.
+    var fieldDeclaration = parsedLibrary.getElementDeclaration(builderElement);
+    if (fieldDeclaration != null) {
+      return (((fieldDeclaration.node as VariableDeclaration).parent)
+                  as VariableDeclarationList)
+              ?.type
+              ?.toSource() ??
+          'dynamic';
+    } else {
+      // Otherwise it's an explicit getter/setter pair; get the type from the getter.
+      return (parsedLibrary.getElementDeclaration(builderElement.getter).node
+                  as MethodDeclaration)
+              ?.returnType
+              ?.toSource() ??
+          'dynamic';
+    }
   }
 
   /// Gets the type name for the builder. Specify the compilation unit to

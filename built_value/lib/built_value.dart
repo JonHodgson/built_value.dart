@@ -16,7 +16,7 @@ abstract class Built<V extends Built<V, B>, B extends Builder<V, B>> {
   ///
   /// The implementation of this method will be generated for you by the
   /// built_value generator.
-  V rebuild(updates(B builder));
+  V rebuild(Function(B) updates);
 
   /// Converts the instance to a builder [B].
   ///
@@ -25,9 +25,10 @@ abstract class Built<V extends Built<V, B>, B extends Builder<V, B>> {
   B toBuilder();
 }
 
-/// Every Built Value must have a [Builder] class.
+/// Every [Built] class has a corresponding [Builder] class.
 ///
-/// Use it to set defaults, if needed, and to do validation.
+/// Usually you don't need to create one by hand; it will be generated
+/// for you.
 ///
 /// See <https://github.com/google/built_value.dart/tree/master/example>
 abstract class Builder<V extends Built<V, B>, B extends Builder<V, B>> {
@@ -40,7 +41,7 @@ abstract class Builder<V extends Built<V, B>, B extends Builder<V, B>> {
   /// Applies updates.
   ///
   /// [updates] is a function that takes a builder [B].
-  void update(updates(B builder));
+  void update(Function(B) updates);
 
   /// Builds.
   ///
@@ -104,13 +105,25 @@ class BuiltValue {
   /// indicates that the name is to be taken from the literal class name.
   final String wireName;
 
+  /// The default for [BuiltValueField.compare]. Set to `false` if you want to
+  /// ignore most fields when comparing, then mark the ones you do want to
+  /// compare on with `@BuiltValueField(compare: true)`.
+  final bool defaultCompare;
+
+  /// The default for [BuiltValueField.serialize]. Set to `false` if you want
+  /// to ignore most fields when serializing, then mark the ones you do want
+  /// to serialize with `@BuiltValueField(serialize: true)`.
+  final bool defaultSerialize;
+
   const BuiltValue(
       {this.instantiable = true,
       this.nestedBuilders = true,
       this.autoCreateNestedBuilders = true,
       this.comparableBuilders = false,
       this.generateBuilderOnSetField = false,
-      this.wireName});
+      this.wireName,
+      this.defaultCompare = true,
+      this.defaultSerialize = true});
 }
 
 /// Nullable annotation for Built Value fields.
@@ -121,13 +134,15 @@ const String nullable = 'nullable';
 /// Optionally, annotate a Built Value field with this to specify settings.
 /// This is only needed for advanced use.
 class BuiltValueField {
-  /// Whether the field is compared and hashed. Defaults to `true`.
+  /// Whether the field is compared and hashed. Defaults to `null` which means
+  /// [BuiltValue.defaultCompare] is used.
   ///
   /// Set to `false` to ignore the field when calculating `hashCode` and when
   /// comparing with `operator==`.
   final bool compare;
 
-  /// Whether the field is serialized. Defaults to `true`.
+  /// Whether the field is serialized. Defaults to `null` which means
+  /// [BuiltValue.defaultSerialize] is used.
   ///
   /// If a field is not serialized, it must either be `@nullable` or specify a
   /// default for deserialization to succeed.
@@ -142,7 +157,7 @@ class BuiltValueField {
   final String defaultValue;
 
   const BuiltValueField(
-      {this.compare = true, this.serialize = true, this.wireName, this.defaultValue});
+      {this.compare, this.serialize, this.wireName, this.defaultValue});
 }
 
 /// Optionally, annotate a Built Value `Serializer` getters with this to

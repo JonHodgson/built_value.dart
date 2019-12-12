@@ -1,7 +1,41 @@
 # Changelog
 
+# 7.0.0
+
+- Internal: clean up `built_value_generator` -> `built_value` dependency;
+  depend on minor instead of major version so we can in future handle tight
+  coupling between the two without a major version bump to `built_value`.
+
+# 6.8.2
+
+- Fix `_finalizeBuilder` generation so it uses the correct class name.
+
+# 6.8.1
+
+- Fix missing `README.md` in `package:built_value`.
+
+# 6.8.0
+
+- Support `_initializeBuilder` hook in value types. If found, it's executed
+  when a `Builder` is created and can be used to set defaults.
+- Support `_finalizeBuilder` hook in value types. If found, it's executed
+  when `build` is called and can be used to apply processing to fields.
+- Add `defaultCompare` and `defaultSerialize` to `@BuiltValue`. They
+  control the defaults for `compare` and `serialize` in `@BuiltValueField`.
+- Add facility to merge `Serializers` instances via `Serializers.merge`,
+  `SerializersBuilder.merge` and `SerializersBuilder.mergeAll`.
+- Bug fix: fix generated code with polymorphism and more than one level of
+  non-instantiable classes.
+- Bug fix: fix generated `operator==` when a field is called `other`.
+- Fix `num` deserialization so it does not always convert to `double`.
+- Bump version of `analyzer`.
+- Internal: replace analyzer's `DartType.displayName` with custom code
+  generator.
+
 # 6.7.1
 
+- Fix codegen for custom builders when fields use types that have an import
+  prefix.
 - Bump version of `analyzer_plugin`.
 
 # 6.7.0

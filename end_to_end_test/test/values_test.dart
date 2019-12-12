@@ -316,4 +316,71 @@ void main() {
       expect(CustomToStringValue().toString(), 'custom');
     });
   });
+
+  group('ValueUsingImportAs', () {
+    test('can be instantiated', () {
+      ValueUsingImportAs((b) => b..value = TestEnum.yes);
+    });
+  });
+
+  group('OtherValue', () {
+    test('compares correctly', () {
+      var value = OtherValue((b) => b..other = 1);
+      var equalValue = OtherValue((b) => b..other = 1);
+      var notEqualValue = OtherValue((b) => b..other = 2);
+      expect(value, equalValue);
+      expect(value, isNot(equals(notEqualValue)));
+    });
+  });
+
+  group('ValueWithBuilderInitializer', () {
+    test('has defaults', () {
+      var value = ValueWithBuilderInitializer((b) => b
+        ..anInt = 1
+        ..nestedValue.anInt = 2);
+      expect(
+          value,
+          ValueWithBuilderInitializer((b) => b
+            ..anInt = 1
+            ..nestedValue.anInt = 2));
+    });
+  });
+
+  group('ValueWithBuilderFinalizer', () {
+    test('applies hook', () {
+      expect(ValueWithBuilderFinalizer((b) => b..anInt = 0).anInt, 1);
+    });
+  });
+
+  group('DefaultsForFieldSettingsValue', () {
+    test('compares correctly', () {
+      var value = DefaultsForFieldSettingsValue((b) => b
+        ..ignored = 0
+        ..compared = 0
+        ..serialized = 0);
+      var equalValue = DefaultsForFieldSettingsValue((b) => b
+        ..ignored = 1
+        ..compared = 0
+        ..serialized = 0);
+      var differentValue = DefaultsForFieldSettingsValue((b) => b
+        ..ignored = 0
+        ..compared = 1
+        ..serialized = 0);
+      expect(value, equalValue);
+      expect(value, isNot(differentValue));
+    });
+  });
+
+  group('ValueWithGenericBuilderInitializer', () {
+    test('works with generics', () {
+      // Initializer only fires for ints, it sets the value to 42.
+      var valueThatTriggersInitializer =
+          ValueWithGenericBuilderInitializer<int>();
+      expect(valueThatTriggersInitializer.value, 42);
+
+      var valueThatDoesNotTriggerInitializer =
+          ValueWithGenericBuilderInitializer<String>();
+      expect(valueThatDoesNotTriggerInitializer.value, null);
+    });
+  });
 }

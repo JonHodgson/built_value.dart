@@ -26,10 +26,13 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(GenericValue.serializer)
       ..add(HasDouble.serializer)
       ..add(HasString.serializer)
+      ..add(ImportedCustomNestedValue.serializer)
+      ..add(ImportedCustomValue.serializer)
       ..add(ImportedValue.serializer)
       ..add(NamedFactoryValue.serializer)
       ..add(NestedGenericContainer.serializer)
       ..add(NonBuiltGeneric.serializer)
+      ..add(OtherValue.serializer)
       ..add(PartiallySerializableValue.serializer)
       ..add(PrimitivesValue.serializer)
       ..add(RecursiveValueA.serializer)
@@ -45,6 +48,8 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(UsesHandCoded.serializer)
       ..add(ValidatedValue.serializer)
       ..add(ValueUsingImportAs.serializer)
+      ..add(ValueWithBuilderFinalizer.serializer)
+      ..add(ValueWithBuilderInitializer.serializer)
       ..add(ValueWithCustomSerializer.serializer)
       ..add(ValueWithHasInt.serializer)
       ..add(ValueWithInt.serializer)
@@ -53,6 +58,12 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(Animal)]),
           () => new ListBuilder<Animal>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(SimpleValue)]),
+          () => new ListBuilder<SimpleValue>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(SimpleValue)]),
+          () => new ListBuilder<SimpleValue>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(SimpleValue)]),
           () => new ListBuilder<SimpleValue>())

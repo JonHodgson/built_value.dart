@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/google/built_value.dart.svg?branch=master)](https://travis-ci.org/google/built_value.dart)
 ## Introduction
 
-Built Values provides:
+Built Value provides:
 
 - Immutable value types;
 - EnumClass, classes that behave like enums;
@@ -10,6 +10,8 @@ Built Values provides:
 
 Immutable collections are from
 [built_collection](https://github.com/google/built_collection.dart#built-collections-for-dart).
+
+See the [API docs](https://pub.dev/documentation/built_value/latest/built_value/built_value-library.html).
 
 ## Articles
 
@@ -160,15 +162,12 @@ be serialized.
 It _supports changes to the data model_. Optional fields can be added or
 removed, and fields can be switched from optional to required, allowing your
 data model to evolve without breaking compatbility. Some other libraries break
-compatability on any change to any serializable class.
+compatibility on any change to any serializable class.
 
 It's _modular_. Each endpoint can choose which classes to know about;
 for example, you can have multiple clients that each know about only a subset of
 the classes the server knows. Most other libraries are monolithic, requiring all
 endpoints to know all types.
-
-It's _multi language_. Support will be come first for Dart, Java and
-Java/GWT. Many other libraries support a single language only.
 
 It _has first class support for validation_ via Built Values. An important 
 part of a powerful data model is ensuring it's valid, so classes can make
@@ -180,6 +179,12 @@ It's _pluggable_. You can add serializers for your own types, and you can add
 which run before and after all serializers. This could be used to
 interoperate with other tools or to add hand coded high performance serializers
 for specific classes. Some other libraries are not so extensible.
+
+It was designed to be _multi language_, mapping to equivalent object models in
+Java and other languages. Currently only Dart is supported. The need for other
+languages didn't materialize as servers are typically either written in Dart
+or owned by third parties. Please open an issue if you'd like to explore
+support in more languages.
 
 ## Common Usage
 
