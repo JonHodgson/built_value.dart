@@ -12,7 +12,9 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value_generator/src/dart_types.dart';
 import 'package:built_value_generator/src/fixes.dart';
 import 'package:built_value_generator/src/memoized_getter.dart';
+import 'package:built_value_generator/src/metadata.dart';
 import 'package:built_value_generator/src/value_source_field.dart';
+import 'package:built_value_generator/src/strings.dart';
 import 'package:quiver/iterables.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -59,7 +61,7 @@ abstract class ValueSourceClass
 
   @memoized
   bool get implementsBuilt => element.allSupertypes
-      .any((interfaceType) => interfaceType.name == 'Built');
+      .any((interfaceType) => interfaceType.element.name == 'Built');
 
   @memoized
   bool get extendsIsAllowed {
@@ -171,7 +173,7 @@ abstract class ValueSourceClass
   @memoized
   String get builderParameters {
     return builderElement.allSupertypes
-        .where((interfaceType) => interfaceType.name == 'Builder')
+        .where((interfaceType) => interfaceType.element.name == 'Builder')
         .single
         .typeArguments
         .map((type) => DartTypes.getName(type))
@@ -278,7 +280,19 @@ abstract class ValueSourceClass
     })));
 
   @memoized
-  bool get implementsHashCode => element.getGetter('hashCode') != null;
+  bool get implementsHashCode {
+    var getter = element.getGetter('hashCode');
+    return getter != null && !getter.isAbstract;
+  }
+
+  @memoized
+  bool get declaresMemoizedHashCode {
+    var getter = element.getGetter('hashCode');
+    return getter != null &&
+        getter.isAbstract &&
+        getter.metadata
+            .any((metadata) => metadataToStringValue(metadata) == 'memoized');
+  }
 
   @memoized
   bool get implementsOperatorEquals => element.getMethod('==') != null;
@@ -299,8 +313,8 @@ abstract class ValueSourceClass
   static bool needsBuiltValue(ClassElement classElement) {
     // TODO(davidmorgan): more exact type check.
     return !classElement.displayName.startsWith('_\$') &&
-        (classElement.allSupertypes
-                .any((interfaceType) => interfaceType.name == 'Built') ||
+        (classElement.allSupertypes.any(
+                (interfaceType) => interfaceType.element.name == 'Built') ||
             classElement.metadata
                 .map((annotation) => annotation.computeConstantValue())
                 .any(
@@ -591,7 +605,7 @@ abstract class ValueSourceClass
 
     if (settings.instantiable) {
       final expectedFactory =
-          'factory ${name}Builder() = _\$${name}Builder$_generics;';
+          'factory ${name}Builder() = ${implName}Builder$_generics;';
       if (builderClassFactories.length != 1 ||
           builderClassFactories.single != expectedFactory) {
         result.add(GeneratorError((b) => b
@@ -665,7 +679,7 @@ abstract class ValueSourceClass
     // If there is a manually maintained builder we have to cast the "build()"
     // result to the generated value class. If the builder is generated, that
     // can return the right type directly and needs no cast.
-    var cast = hasBuilder ? 'as _\$$name$_generics' : '';
+    var cast = hasBuilder ? 'as $implName$_generics' : '';
     result.writeln('factory $implName(['
         'void Function(${name}Builder$_generics) updates]) '
         '=> (new ${name}Builder$_generics()..update(updates)).build() $cast;');
@@ -698,7 +712,7 @@ abstract class ValueSourceClass
       for (var field in requiredFields) {
         result.writeln('if (${field.name} == null) {');
         result.writeln(
-            "throw new BuiltValueNullFieldError('$name', '${field.name}');");
+            "throw new BuiltValueNullFieldError('$name', '${escapeString(field.name)}');");
         result.writeln('}');
       }
       // If there are generic parameters, check they are not "dynamic".
@@ -752,7 +766,8 @@ abstract class ValueSourceClass
       } else {
         result.writeln("return (newBuiltValueToStringHelper('$name')");
         result.writeln(fields
-            .map((field) => "..add('${field.name}',  ${field.name})")
+            .map((field) =>
+                "..add('${escapeString(field.name)}',  ${field.name})")
             .join(''));
         result.writeln(').toString();');
       }
@@ -1021,7 +1036,7 @@ abstract class ValueSourceClass
     result.writeln('  if (identical(other, this)) return true;');
 
     if (comparedFunctionFields.isNotEmpty) {
-      result.writeln('  final _\$dynamicOther = other as dynamic;');
+      result.writeln('  final dynamic _\$dynamicOther = other;');
     }
     result.writeln('  return other is $name${forBuilder ? 'Builder' : ''}');
     if (comparedFields.isNotEmpty) {
@@ -1038,13 +1053,20 @@ abstract class ValueSourceClass
     result.writeln('}');
     result.writeln();
 
+    var generateMemoizedHashCode =
+        declaresMemoizedHashCode && comparedFields.isNotEmpty;
+    if (generateMemoizedHashCode) {
+      result.writeln('int __hashCode;');
+    }
+
     result.writeln('@override');
     result.writeln('int get hashCode {');
 
     if (comparedFields.isEmpty) {
       result.writeln('return ${name.hashCode};');
     } else {
-      result.writeln(r'return $jf(');
+      result.writeln(
+          'return ${generateMemoizedHashCode ? '__hashCode ??= ' : ''}\$jf(');
       result.writeln(r'$jc(' * comparedFields.length);
       // Use a different seed for builders than for values, so they do not have
       // identical hashCodes if the values are identical.

@@ -25,7 +25,7 @@ abstract class SerializerSourceField
     'BuiltMap': 'MapBuilder',
     'BuiltSet': 'SetBuilder',
     'BuiltSetMultimap': 'SetMultimapBuilder',
-        'BuiltSortedList': 'SortedListBuilder',
+    'BuiltSortedList': 'SortedListBuilder',
   });
   BuiltValue get settings;
   ParsedLibraryResult get parsedLibrary;
@@ -189,22 +189,26 @@ abstract class SerializerSourceField
     }
   }
 
-  static String _generateCast(
-      String type, BuiltMap<String, String> classGenericBounds,
+  String _generateCast(String type, BuiltMap<String, String> classGenericBounds,
       {bool topLevel = true}) {
     var bareType = _getBareType(type);
 
-    // For built collections we can cast to the dynamic type when deserializing,
-    // instead of the actual generic type. This is because the `replace` method
-    // checks the generic type and copies if needed.
+    // `built_collection` `replace` methods don't care about the full generic
+    // type, so we can be less precise about the cast. This doesn't add any
+    // particular value for vanilla `built_value` but it allows plugging in
+    // serializers that don't get the generic types correct.
     String generics;
-    if (topLevel && DartTypes.isBuiltCollectionTypeName(bareType)) {
+    if (topLevel &&
+        DartTypes.isBuiltCollectionTypeName(bareType) &&
+        builderFieldUsesNestedBuilder) {
       if (bareType == 'BuiltList' || bareType == 'BuiltSortedList' || bareType == 'BuiltSet') {
-        generics = 'dynamic';
+        generics = 'Object';
       } else if (bareType == 'BuiltMap' ||
           bareType == 'BuiltListMultimap' ||
           bareType == 'BuiltSetMultimap') {
-        generics = 'dynamic, dynamic';
+        // Map `replace` methods are even more generous so that they can accept
+        // a `Map` or a `BuiltMap`. So, we can just pass `Object`.
+        return 'Object';
       } else {
         throw UnsupportedError('Bare type is a built_collection type, but not '
             'one of the known built_collection types: $bareType.');
@@ -212,6 +216,7 @@ abstract class SerializerSourceField
     } else {
       generics = _getGenerics(type);
     }
+
     var genericItems = _splitOnTopLevelCommas(generics);
 
     if (generics.isEmpty) {

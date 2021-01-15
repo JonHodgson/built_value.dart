@@ -38,7 +38,7 @@ class BuiltSortedListSerializer implements StructuredSerializer<BuiltSortedList>
         ? FullType.unspecified
         : specifiedType.parameters[0];
 
-    SortedListBuilder result = isUnderspecified
+    var result = isUnderspecified
         ? SortedListBuilder<Object>()
         : serializers.newBuilder(specifiedType) as SortedListBuilder;
 

@@ -69,28 +69,26 @@ class _$StandardJsonValueSerializer
           break;
         case 'keyValues':
           result.keyValues.replace(serializers.deserialize(value,
-              specifiedType: const FullType(BuiltMap, const [
-                const FullType(String),
-                const FullType(JsonObject)
-              ])) as BuiltMap<dynamic, dynamic>);
+              specifiedType: const FullType(BuiltMap,
+                  const [const FullType(String), const FullType(JsonObject)])));
           break;
         case 'zoo':
           result.zoo.replace(serializers.deserialize(value,
                   specifiedType:
                       const FullType(BuiltList, const [const FullType(Animal)]))
-              as BuiltList<dynamic>);
+              as BuiltList<Object>);
           break;
         case 'uniqueZoo':
           result.uniqueZoo.replace(serializers.deserialize(value,
                   specifiedType:
                       const FullType(BuiltSet, const [const FullType(Animal)]))
-              as BuiltSet<dynamic>);
+              as BuiltSet<Object>);
           break;
         case 'strings':
           result.strings.replace(serializers.deserialize(value,
                   specifiedType:
                       const FullType(BuiltList, const [const FullType(String)]))
-              as BuiltList<dynamic>);
+              as BuiltList<Object>);
           break;
       }
     }

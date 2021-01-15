@@ -1,5 +1,63 @@
 # Changelog
 
+# 7.1.0
+
+- Support private `Built` classes. Note that private classes cannot be made
+  serializable.
+- Support serializing enums to ints: add `wireNumber` to
+  `@BuiltValueEnumConst`.
+- Support memoizing `hashCode`, so it's computed lazily once. Write an abstract
+  getter `int get hashCode;` then annotate it with `@memoized` to turn this on
+  for a `built_value` class.
+- Trim `built_value_test` dependencies: depend on `matcher` instead of `test`.
+- Fix enum generator error messages when `value` and `valueOf` are missing.
+
+# 7.0.9
+
+- Fix unescaped string usages while generating `ValueSourceClass`.
+- Fix analyzer use: don't rely on `toString` on types.
+
+# 7.0.8
+
+- Fix `analyzer` lower bound: was `0.39.0`, needs to be `0.39.3`.
+
+# 7.0.7
+
+- Fix regression in a corner case when determining which fields to generate
+  based on mixins.
+- Tweak generation changes for `implicit-casts: false` and
+  `implicit-dynamic: false`. Relax casts again where possible.
+
+# 7.0.6
+
+- Make generated code comply with analyzer option `strict-raw-types`.
+- Allow `Serialiers` declaration to comply with `strict-raw-types`, or to
+  continue to use raw types as before.
+- Make generated code comply with analyzer options `implicit-casts: false`
+  and `implicit-dynamic: false`.
+
+# 7.0.5
+
+- Internal: fix analyzer deprecation warnings.
+
+# 7.0.4
+
+- Split analysis plugin out into new package, `built_value_analyzer_plugin`.
+  Bump `built_value_generator` dependency on `analyzer` to `0.39.0` so it
+  supports extension methods.
+
+# 7.0.3
+
+- Add `example` folders with `README.md` pointing to examples.
+
+# 7.0.2
+
+- Internal: cleanup for pedantic v1.9.0 lints.
+
+# 7.0.1
+
+- Internal: cleanup for pedantic v1.9.0 lints.
+
 # 7.0.0
 
 - Internal: clean up `built_value_generator` -> `built_value` dependency;

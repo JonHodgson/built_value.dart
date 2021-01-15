@@ -21,6 +21,9 @@ abstract class SimpleValue implements Built<SimpleValue, SimpleValueBuilder> {
   @nullable
   String get aString;
 
+  @nullable
+  bool get $mustBeEscaped;
+
   factory SimpleValue([void Function(SimpleValueBuilder) updates]) =
       _$SimpleValue;
   SimpleValue._();
@@ -631,4 +634,36 @@ abstract class ValueWithGenericBuilderInitializer<T>
       [void Function(ValueWithGenericBuilderInitializerBuilder<T>)
           updates]) = _$ValueWithGenericBuilderInitializer<T>;
   ValueWithGenericBuilderInitializer._();
+}
+
+abstract class HashcodeValue
+    implements Built<HashcodeValue, HashcodeValueBuilder> {
+  int get x;
+  int get y;
+
+  HashcodeValue._();
+  factory HashcodeValue([void Function(HashcodeValueBuilder) updates]) =
+      _$HashcodeValue;
+}
+
+abstract class MemoizedHashcodeValue
+    implements Built<MemoizedHashcodeValue, MemoizedHashcodeValueBuilder> {
+  int get x;
+  int get y;
+
+  @override
+  @memoized
+  int get hashCode;
+
+  MemoizedHashcodeValue._();
+  factory MemoizedHashcodeValue(
+          [void Function(MemoizedHashcodeValueBuilder) updates]) =
+      _$MemoizedHashcodeValue;
+}
+
+abstract class _PrivateValue
+    implements Built<_PrivateValue, _PrivateValueBuilder> {
+  _PrivateValue._();
+  factory _PrivateValue([void Function(_PrivateValueBuilder) updates]) =
+      _$PrivateValue;
 }

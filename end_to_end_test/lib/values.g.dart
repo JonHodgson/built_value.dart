@@ -76,6 +76,12 @@ class _$SimpleValueSerializer implements StructuredSerializer<SimpleValue> {
         ..add(serializers.serialize(object.aString,
             specifiedType: const FullType(String)));
     }
+    if (object.$mustBeEscaped != null) {
+      result
+        ..add('\$mustBeEscaped')
+        ..add(serializers.serialize(object.$mustBeEscaped,
+            specifiedType: const FullType(bool)));
+    }
     return result;
   }
 
@@ -97,6 +103,10 @@ class _$SimpleValueSerializer implements StructuredSerializer<SimpleValue> {
         case 'aString':
           result.aString = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
+          break;
+        case '\$mustBeEscaped':
+          result.$mustBeEscaped = serializers.deserialize(value,
+              specifiedType: const FullType(bool)) as bool;
           break;
       }
     }
@@ -765,7 +775,7 @@ class _$FieldDiscoveryValueSerializer
           result.values.replace(serializers.deserialize(value,
               specifiedType: const FullType(BuiltList, const [
                 const FullType(ThirdDiscoverableValue)
-              ])) as BuiltList<dynamic>);
+              ])) as BuiltList<Object>);
           break;
         case 'recursiveValue':
           result.recursiveValue.replace(serializers.deserialize(value,
@@ -1288,11 +1298,13 @@ class _$SimpleValue extends SimpleValue {
   final int anInt;
   @override
   final String aString;
+  @override
+  final bool $mustBeEscaped;
 
   factory _$SimpleValue([void Function(SimpleValueBuilder) updates]) =>
       (new SimpleValueBuilder()..update(updates)).build();
 
-  _$SimpleValue._({this.anInt, this.aString}) : super._() {
+  _$SimpleValue._({this.anInt, this.aString, this.$mustBeEscaped}) : super._() {
     if (anInt == null) {
       throw new BuiltValueNullFieldError('SimpleValue', 'anInt');
     }
@@ -1310,19 +1322,22 @@ class _$SimpleValue extends SimpleValue {
     if (identical(other, this)) return true;
     return other is SimpleValue &&
         anInt == other.anInt &&
-        aString == other.aString;
+        aString == other.aString &&
+        $mustBeEscaped == other.$mustBeEscaped;
   }
 
   @override
   int get hashCode {
-    return $jf($jc($jc(0, anInt.hashCode), aString.hashCode));
+    return $jf($jc($jc($jc(0, anInt.hashCode), aString.hashCode),
+        $mustBeEscaped.hashCode));
   }
 
   @override
   String toString() {
     return (newBuiltValueToStringHelper('SimpleValue')
           ..add('anInt', anInt)
-          ..add('aString', aString))
+          ..add('aString', aString)
+          ..add('\$mustBeEscaped', $mustBeEscaped))
         .toString();
   }
 }
@@ -1338,12 +1353,18 @@ class SimpleValueBuilder implements Builder<SimpleValue, SimpleValueBuilder> {
   String get aString => _$this._aString;
   set aString(String aString) => _$this._aString = aString;
 
+  bool _$mustBeEscaped;
+  bool get $mustBeEscaped => _$this._$mustBeEscaped;
+  set $mustBeEscaped(bool $mustBeEscaped) =>
+      _$this._$mustBeEscaped = $mustBeEscaped;
+
   SimpleValueBuilder();
 
   SimpleValueBuilder get _$this {
     if (_$v != null) {
       _anInt = _$v.anInt;
       _aString = _$v.aString;
+      _$mustBeEscaped = _$v.$mustBeEscaped;
       _$v = null;
     }
     return this;
@@ -1364,7 +1385,9 @@ class SimpleValueBuilder implements Builder<SimpleValue, SimpleValueBuilder> {
 
   @override
   _$SimpleValue build() {
-    final _$result = _$v ?? new _$SimpleValue._(anInt: anInt, aString: aString);
+    final _$result = _$v ??
+        new _$SimpleValue._(
+            anInt: anInt, aString: aString, $mustBeEscaped: $mustBeEscaped);
     replace(_$result);
     return _$result;
   }
@@ -2911,7 +2934,7 @@ class _$FunctionValue extends FunctionValue {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    final _$dynamicOther = other as dynamic;
+    final dynamic _$dynamicOther = other;
     return other is FunctionValue && function == _$dynamicOther.function;
   }
 
@@ -2993,7 +3016,7 @@ class _$ListOfFunctionValue extends ListOfFunctionValue {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    final _$dynamicOther = other as dynamic;
+    final dynamic _$dynamicOther = other;
     return other is ListOfFunctionValue &&
         functions == _$dynamicOther.functions;
   }
@@ -4772,6 +4795,245 @@ class ValueWithGenericBuilderInitializerBuilder<T>
   _$ValueWithGenericBuilderInitializer<T> build() {
     final _$result =
         _$v ?? new _$ValueWithGenericBuilderInitializer<T>._(value: value);
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$HashcodeValue extends HashcodeValue {
+  @override
+  final int x;
+  @override
+  final int y;
+
+  factory _$HashcodeValue([void Function(HashcodeValueBuilder) updates]) =>
+      (new HashcodeValueBuilder()..update(updates)).build();
+
+  _$HashcodeValue._({this.x, this.y}) : super._() {
+    if (x == null) {
+      throw new BuiltValueNullFieldError('HashcodeValue', 'x');
+    }
+    if (y == null) {
+      throw new BuiltValueNullFieldError('HashcodeValue', 'y');
+    }
+  }
+
+  @override
+  HashcodeValue rebuild(void Function(HashcodeValueBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  HashcodeValueBuilder toBuilder() => new HashcodeValueBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is HashcodeValue && x == other.x && y == other.y;
+  }
+
+  @override
+  int get hashCode {
+    return $jf($jc($jc(0, x.hashCode), y.hashCode));
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper('HashcodeValue')
+          ..add('x', x)
+          ..add('y', y))
+        .toString();
+  }
+}
+
+class HashcodeValueBuilder
+    implements Builder<HashcodeValue, HashcodeValueBuilder> {
+  _$HashcodeValue _$v;
+
+  int _x;
+  int get x => _$this._x;
+  set x(int x) => _$this._x = x;
+
+  int _y;
+  int get y => _$this._y;
+  set y(int y) => _$this._y = y;
+
+  HashcodeValueBuilder();
+
+  HashcodeValueBuilder get _$this {
+    if (_$v != null) {
+      _x = _$v.x;
+      _y = _$v.y;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(HashcodeValue other) {
+    if (other == null) {
+      throw new ArgumentError.notNull('other');
+    }
+    _$v = other as _$HashcodeValue;
+  }
+
+  @override
+  void update(void Function(HashcodeValueBuilder) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$HashcodeValue build() {
+    final _$result = _$v ?? new _$HashcodeValue._(x: x, y: y);
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$MemoizedHashcodeValue extends MemoizedHashcodeValue {
+  @override
+  final int x;
+  @override
+  final int y;
+
+  factory _$MemoizedHashcodeValue(
+          [void Function(MemoizedHashcodeValueBuilder) updates]) =>
+      (new MemoizedHashcodeValueBuilder()..update(updates)).build();
+
+  _$MemoizedHashcodeValue._({this.x, this.y}) : super._() {
+    if (x == null) {
+      throw new BuiltValueNullFieldError('MemoizedHashcodeValue', 'x');
+    }
+    if (y == null) {
+      throw new BuiltValueNullFieldError('MemoizedHashcodeValue', 'y');
+    }
+  }
+
+  @override
+  MemoizedHashcodeValue rebuild(
+          void Function(MemoizedHashcodeValueBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  MemoizedHashcodeValueBuilder toBuilder() =>
+      new MemoizedHashcodeValueBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is MemoizedHashcodeValue && x == other.x && y == other.y;
+  }
+
+  int __hashCode;
+  @override
+  int get hashCode {
+    return __hashCode ??= $jf($jc($jc(0, x.hashCode), y.hashCode));
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper('MemoizedHashcodeValue')
+          ..add('x', x)
+          ..add('y', y))
+        .toString();
+  }
+}
+
+class MemoizedHashcodeValueBuilder
+    implements Builder<MemoizedHashcodeValue, MemoizedHashcodeValueBuilder> {
+  _$MemoizedHashcodeValue _$v;
+
+  int _x;
+  int get x => _$this._x;
+  set x(int x) => _$this._x = x;
+
+  int _y;
+  int get y => _$this._y;
+  set y(int y) => _$this._y = y;
+
+  MemoizedHashcodeValueBuilder();
+
+  MemoizedHashcodeValueBuilder get _$this {
+    if (_$v != null) {
+      _x = _$v.x;
+      _y = _$v.y;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(MemoizedHashcodeValue other) {
+    if (other == null) {
+      throw new ArgumentError.notNull('other');
+    }
+    _$v = other as _$MemoizedHashcodeValue;
+  }
+
+  @override
+  void update(void Function(MemoizedHashcodeValueBuilder) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$MemoizedHashcodeValue build() {
+    final _$result = _$v ?? new _$MemoizedHashcodeValue._(x: x, y: y);
+    replace(_$result);
+    return _$result;
+  }
+}
+
+class _$PrivateValue extends _PrivateValue {
+  factory _$PrivateValue([void Function(_PrivateValueBuilder) updates]) =>
+      (new _PrivateValueBuilder()..update(updates)).build();
+
+  _$PrivateValue._() : super._();
+
+  @override
+  _PrivateValue rebuild(void Function(_PrivateValueBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  _PrivateValueBuilder toBuilder() => new _PrivateValueBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is _PrivateValue;
+  }
+
+  @override
+  int get hashCode {
+    return 75608033;
+  }
+
+  @override
+  String toString() {
+    return newBuiltValueToStringHelper('_PrivateValue').toString();
+  }
+}
+
+class _PrivateValueBuilder
+    implements Builder<_PrivateValue, _PrivateValueBuilder> {
+  _$PrivateValue _$v;
+
+  _PrivateValueBuilder();
+
+  @override
+  void replace(_PrivateValue other) {
+    if (other == null) {
+      throw new ArgumentError.notNull('other');
+    }
+    _$v = other as _$PrivateValue;
+  }
+
+  @override
+  void update(void Function(_PrivateValueBuilder) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$PrivateValue build() {
+    final _$result = _$v ?? new _$PrivateValue._();
     replace(_$result);
     return _$result;
   }

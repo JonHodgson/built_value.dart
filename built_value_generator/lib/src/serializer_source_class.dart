@@ -111,13 +111,24 @@ abstract class SerializerSourceClass
   @memoized
   BuiltList<String> get genericBounds =>
       BuiltList<String>(element.typeParameters
-          .map((element) => (element.bound ?? '').toString()));
+          .map((element) => DartTypes.getName(element.bound) ?? ''));
+
+  @memoized
+  String get genericBoundsOrObjectString => genericBounds.isEmpty
+      ? ''
+      : '<' +
+          genericBounds
+              .map((bound) => bound.isEmpty ? 'Object' : bound)
+              .join(', ') +
+          '>';
+
+  String get genericName => '$name$genericBoundsOrObjectString';
 
   // TODO(davidmorgan): better check.
   @memoized
   bool get isBuiltValue =>
       element.allSupertypes
-          .map((type) => type.name)
+          .map((type) => type.element.name)
           .any((name) => name.startsWith('Built')) &&
       !element.name.startsWith(r'_$') &&
       element.fields.any((field) => field.name == 'serializer');
@@ -126,7 +137,7 @@ abstract class SerializerSourceClass
   @memoized
   bool get isEnumClass =>
       element.allSupertypes
-          .map((type) => type.name)
+          .map((type) => type.element.name)
           .any((name) => name == 'EnumClass') &&
       !element.name.startsWith(r'_$') &&
       element.fields.any((field) => field.name == 'serializer');
@@ -206,19 +217,32 @@ abstract class SerializerSourceClass
   CompilationUnitElement get compilationUnit =>
       element.library.definingCompilationUnit;
 
+  /// Returns the serializer class name for the generated implementation.
+  @memoized
+  String get serializerImplName => '_\$${name}Serializer';
+
+  /// Returns the serializer instance name for the generated implementation,
+  /// referenced by the user as a `static serializer` attribute.
+  @memoized
+  String get serializerInstanceName => '_\$${_toCamelCase(name)}Serializer';
+
   Iterable<String> computeErrors() {
     var result = <String>[];
 
     if (!serializerSettings.custom) {
-      final camelCaseName =
-          name.substring(0, 1).toLowerCase() + name.substring(1);
-
       final expectedSerializerDeclaration =
-          'static Serializer<$name> get serializer => '
-          '_\$${camelCaseName}Serializer;';
-      if (serializerDeclaration != expectedSerializerDeclaration) {
+          'static Serializer<$genericName> get serializer => ${serializerInstanceName};';
+      // We used to recommend raw types; recommend the full type now, but still
+      // allow raw types.
+      final expectedSerializerDeclarationRaw =
+          'static Serializer<$name> get serializer => ${serializerInstanceName};';
+      if (serializerDeclaration != expectedSerializerDeclaration &&
+          serializerDeclaration != expectedSerializerDeclarationRaw) {
         result.add('Declare $name.serializer as: '
             '$expectedSerializerDeclaration got $serializerDeclaration');
+      }
+      if (name.startsWith('_')) {
+        result.add('Cannot generate serializers for private class ${name}');
       }
     }
 
@@ -256,24 +280,27 @@ abstract class SerializerSourceClass
         .join('\n');
   }
 
-  String generateSerializerDeclaration() {
-    var camelCaseName = _toCamelCase(name);
-    return 'Serializer<$name> '
-        '_\$${camelCaseName}Serializer = '
-        'new _\$${name}Serializer();';
-  }
+  String generateSerializerDeclaration() =>
+      'Serializer<$genericName> ${serializerInstanceName} = new ${serializerImplName}();';
+
+  /// Returns the class name for the generated implementation. If the manually
+  /// maintained class is private then we ignore the underscore here, to avoid
+  /// returning a class name starting `_$_`.
+  @memoized
+  String get implName =>
+      name.startsWith('_') ? '_\$${name.substring(1)}' : '_\$$name';
 
   String generateSerializer() {
     if (isBuiltValue) {
       return '''
-class _\$${name}Serializer implements StructuredSerializer<$name> {
+class ${serializerImplName} implements StructuredSerializer<$genericName> {
   @override
-  final Iterable<Type> types = const [$name, _\$$name];
+  final Iterable<Type> types = const [$name, $implName];
   @override
   final String wireName = '${escapeString(wireName)}';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, $name object,
+  Iterable<Object> serialize(Serializers serializers, $genericName object,
       {FullType specifiedType = FullType.unspecified}) {
     ${fields.isEmpty ? 'return <Object>[];' : '''
     ${_generateGenericsSerializerPreamble()}
@@ -284,7 +311,7 @@ class _\$${name}Serializer implements StructuredSerializer<$name> {
   }
 
   @override
-  $name deserialize(Serializers serializers, Iterable<Object> serialized,
+  $genericName deserialize(Serializers serializers, Iterable<Object> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     ${_generateGenericsSerializerPreamble()}
     ${fields.isEmpty ? 'return ${_generateNewBuilder()}.build();' : '''
@@ -307,27 +334,29 @@ class _\$${name}Serializer implements StructuredSerializer<$name> {
 }
 ''';
     } else if (isEnumClass) {
-      final wireNameMapping = BuiltMap<String, String>.build((b) => element
+      final wireNameMapping = BuiltMap<String, Object>.build((b) => element
               .fields
               .where((field) => field.isConst && field.isStatic)
               .forEach((field) {
             final enumSourceField = EnumSourceField(parsedLibrary, field);
             if (enumSourceField.settings.wireName != null) {
               b[field.name] = enumSourceField.settings.wireName;
+            } else if (enumSourceField.settings.wireNumber != null) {
+              b[field.name] = enumSourceField.settings.wireNumber;
             }
           }));
 
       if (wireNameMapping.isEmpty) {
         // No wire names. Just use the enum names directly.
         return '''
-class _\$${name}Serializer implements PrimitiveSerializer<$name> {
+class $serializerImplName implements PrimitiveSerializer<$genericName> {
   @override
   final Iterable<Type> types = const <Type>[$name];
   @override
   final String wireName = '${escapeString(wireName)}';
 
   @override
-  Object serialize(Serializers serializers, $name object,
+  Object serialize(Serializers serializers, $genericName object,
       {FullType specifiedType = FullType.unspecified}) =>
     object.name;
 
@@ -339,16 +368,16 @@ class _\$${name}Serializer implements PrimitiveSerializer<$name> {
       } else {
         // Generate maps between enum names and wire names.
         final toWire = '''
-         static const Map<String, String> _toWire = const <String, String>{
-           ${wireNameMapping.keys.map((key) => "'$key': '${wireNameMapping[key]}',").join('\n')}
+         static const Map<String, Object> _toWire = const <String, Object>{
+           ${wireNameMapping.keys.map((key) => "'$key': ${_toCode(wireNameMapping[key])},").join('\n')}
          };''';
         final fromWire = '''
-         static const Map<String, String> _fromWire = const <String, String>{
-           ${wireNameMapping.keys.map((key) => "'${wireNameMapping[key]}': '$key',").join('\n')}
+         static const Map<Object, String> _fromWire = const <Object, String>{
+           ${wireNameMapping.keys.map((key) => "${_toCode(wireNameMapping[key])}: '$key',").join('\n')}
          };''';
 
         return '''
-class _\$${name}Serializer implements PrimitiveSerializer<$name> {
+class $serializerImplName implements PrimitiveSerializer<$genericName> {
   $toWire
   $fromWire
 
@@ -358,12 +387,12 @@ class _\$${name}Serializer implements PrimitiveSerializer<$name> {
   final String wireName = '${escapeString(wireName)}';
 
   @override
-  Object serialize(Serializers serializers, $name object,
+  Object serialize(Serializers serializers, $genericName object,
       {FullType specifiedType = FullType.unspecified}) =>
     _toWire[object.name] ?? object.name;
 
   @override
-  $name deserialize(Serializers serializers, Object serialized,
+  $genericName deserialize(Serializers serializers, Object serialized,
       {FullType specifiedType = FullType.unspecified}) =>
     $name.valueOf(_fromWire[serialized] ?? serialized as String);
 }''';
@@ -373,14 +402,21 @@ class _\$${name}Serializer implements PrimitiveSerializer<$name> {
     }
   }
 
+  static String _toCode(Object object) {
+    if (object is String) {
+      return "'$object'";
+    } else if (object is int) {
+      return object.toString();
+    } else {
+      throw UnsupportedError(object);
+    }
+  }
+
   String _generateNewBuilder() {
     var parameters = _genericParametersUsedInFields;
     if (parameters.isEmpty) return 'new ${name}Builder()';
-    var boundsOrObject = genericBounds
-        .map((bound) => bound.isEmpty ? 'Object' : bound)
-        .join(', ');
     return 'isUnderspecified ? '
-        'new ${name}Builder<$boundsOrObject>() : '
+        'new ${name}Builder$genericBoundsOrObjectString() : '
         'serializers.newBuilder(specifiedType) as ${name}Builder';
   }
 

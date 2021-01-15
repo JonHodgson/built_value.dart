@@ -1,9 +1,8 @@
 name: end_to_end_test
-version: 7.0.0
+version: 7.1.0
+publish_to: none
 description: >
   Tests, not for publishing.
-authors:
-- David Morgan <davidmorgan@google.com>
 homepage: https://github.com/google/built_value.dart
 
 environment:
@@ -11,12 +10,12 @@ environment:
 
 dependencies:
   built_collection: '>=2.0.0 <5.0.0'
-  built_value: '>=5.5.5 <7.0.0'
+  built_value: ^7.0.2
 
 dev_dependencies:
   build: ^1.0.0
   build_runner: ^1.0.0
-  built_value_generator: ^7.0.0
+  built_value_generator: ^7.1.0
   fixnum: ^0.10.0
   pedantic: ^1.4.0
   quiver: '>=0.21.0 <3.0.0'
@@ -27,3 +26,5 @@ dependency_overrides:
     path: ../built_value
   built_value_generator:
     path: ../built_value_generator
+  built_collection:
+    path: ../../built_collection

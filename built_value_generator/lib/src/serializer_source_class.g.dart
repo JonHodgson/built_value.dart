@@ -20,13 +20,17 @@ class _$SerializerSourceClass extends SerializerSourceClass {
   String __serializerDeclaration;
   BuiltList<String> __genericParameters;
   BuiltList<String> __genericBounds;
+  String __genericBoundsOrObjectString;
   bool __isBuiltValue;
   bool __isEnumClass;
   BuiltList<SerializerSourceField> __fields;
   BuiltSet<SerializerSourceClass> __fieldClasses;
   CompilationUnitElement __compilationUnit;
+  String __serializerImplName;
+  String __serializerInstanceName;
   bool __isSerializable;
   bool __needsGeneratedSerializer;
+  String __implName;
 
   factory _$SerializerSourceClass(
           [void Function(SerializerSourceClassBuilder) updates]) =>
@@ -73,6 +77,10 @@ class _$SerializerSourceClass extends SerializerSourceClass {
       __genericBounds ??= super.genericBounds;
 
   @override
+  String get genericBoundsOrObjectString =>
+      __genericBoundsOrObjectString ??= super.genericBoundsOrObjectString;
+
+  @override
   bool get isBuiltValue => __isBuiltValue ??= super.isBuiltValue;
 
   @override
@@ -90,11 +98,22 @@ class _$SerializerSourceClass extends SerializerSourceClass {
       __compilationUnit ??= super.compilationUnit;
 
   @override
+  String get serializerImplName =>
+      __serializerImplName ??= super.serializerImplName;
+
+  @override
+  String get serializerInstanceName =>
+      __serializerInstanceName ??= super.serializerInstanceName;
+
+  @override
   bool get isSerializable => __isSerializable ??= super.isSerializable;
 
   @override
   bool get needsGeneratedSerializer =>
       __needsGeneratedSerializer ??= super.needsGeneratedSerializer;
+
+  @override
+  String get implName => __implName ??= super.implName;
 
   @override
   SerializerSourceClass rebuild(

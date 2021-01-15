@@ -14,7 +14,7 @@ import 'package:built_collection/built_collection.dart';
 /// If a field is overridden then just the closest (overriding) field is
 /// returned.
 BuiltList<FieldElement> collectFields(ClassElement element) =>
-    collectFieldsForType(element.type);
+    collectFieldsForType(element.thisType);
 
 /// Gets fields, including from interfaces. Fields from interfaces are only
 /// returned if they are not also implemented by a mixin.
@@ -42,7 +42,14 @@ BuiltList<FieldElement> collectFieldsForType(InterfaceType type) {
   return BuiltList<FieldElement>.build((b) => b
     ..addAll(fieldSet)
     ..where((field) =>
-        type.lookUpInheritedGetter(field.name, thisType: false)?.isAbstract ??
+        type
+            .lookUpGetter2(
+              field.name,
+              field.library,
+              inherited: true,
+              concrete: true,
+            )
+            ?.isAbstract ??
         true));
 }
 
