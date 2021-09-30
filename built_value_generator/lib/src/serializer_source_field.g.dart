@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of built_value_generator.source_field;
 
@@ -17,12 +18,19 @@ class _$SerializerSourceField extends SerializerSourceField {
   final FieldElement builderElement;
   bool __isSerializable;
   BuiltValueField __builtValueField;
+  bool __isNonNullByDefault;
+  String __orNull;
+  bool __hasNullableAnnotation;
+  bool __hasNullableType;
   bool __isNullable;
   String __name;
   String __wireName;
   String __type;
+  String __typeWithNullabilitySuffix;
   String __typeWithPrefix;
+  String __typeWithPrefixAndNullabilitySuffix;
   bool __builderFieldUsesNestedBuilder;
+  bool __builderFieldAutoCreatesNestedBuilder;
   String __rawType;
   bool __needsBuilder;
 
@@ -33,16 +41,12 @@ class _$SerializerSourceField extends SerializerSourceField {
   _$SerializerSourceField._(
       {this.settings, this.parsedLibrary, this.element, this.builderElement})
       : super._() {
-    if (settings == null) {
-      throw new BuiltValueNullFieldError('SerializerSourceField', 'settings');
-    }
-    if (parsedLibrary == null) {
-      throw new BuiltValueNullFieldError(
-          'SerializerSourceField', 'parsedLibrary');
-    }
-    if (element == null) {
-      throw new BuiltValueNullFieldError('SerializerSourceField', 'element');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        settings, 'SerializerSourceField', 'settings');
+    BuiltValueNullFieldError.checkNotNull(
+        parsedLibrary, 'SerializerSourceField', 'parsedLibrary');
+    BuiltValueNullFieldError.checkNotNull(
+        element, 'SerializerSourceField', 'element');
   }
 
   @override
@@ -51,6 +55,20 @@ class _$SerializerSourceField extends SerializerSourceField {
   @override
   BuiltValueField get builtValueField =>
       __builtValueField ??= super.builtValueField;
+
+  @override
+  bool get isNonNullByDefault =>
+      __isNonNullByDefault ??= super.isNonNullByDefault;
+
+  @override
+  String get orNull => __orNull ??= super.orNull;
+
+  @override
+  bool get hasNullableAnnotation =>
+      __hasNullableAnnotation ??= super.hasNullableAnnotation;
+
+  @override
+  bool get hasNullableType => __hasNullableType ??= super.hasNullableType;
 
   @override
   bool get isNullable => __isNullable ??= super.isNullable;
@@ -65,11 +83,25 @@ class _$SerializerSourceField extends SerializerSourceField {
   String get type => __type ??= super.type;
 
   @override
+  String get typeWithNullabilitySuffix =>
+      __typeWithNullabilitySuffix ??= super.typeWithNullabilitySuffix;
+
+  @override
   String get typeWithPrefix => __typeWithPrefix ??= super.typeWithPrefix;
+
+  @override
+  String get typeWithPrefixAndNullabilitySuffix =>
+      __typeWithPrefixAndNullabilitySuffix ??=
+          super.typeWithPrefixAndNullabilitySuffix;
 
   @override
   bool get builderFieldUsesNestedBuilder =>
       __builderFieldUsesNestedBuilder ??= super.builderFieldUsesNestedBuilder;
+
+  @override
+  bool get builderFieldAutoCreatesNestedBuilder =>
+      __builderFieldAutoCreatesNestedBuilder ??=
+          super.builderFieldAutoCreatesNestedBuilder;
 
   @override
   String get rawType => __rawType ??= super.rawType;
@@ -140,11 +172,12 @@ class SerializerSourceFieldBuilder
   SerializerSourceFieldBuilder();
 
   SerializerSourceFieldBuilder get _$this {
-    if (_$v != null) {
-      _settings = _$v.settings;
-      _parsedLibrary = _$v.parsedLibrary;
-      _element = _$v.element;
-      _builderElement = _$v.builderElement;
+    final $v = _$v;
+    if ($v != null) {
+      _settings = $v.settings;
+      _parsedLibrary = $v.parsedLibrary;
+      _element = $v.element;
+      _builderElement = $v.builderElement;
       _$v = null;
     }
     return this;
@@ -152,9 +185,7 @@ class SerializerSourceFieldBuilder
 
   @override
   void replace(SerializerSourceField other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SerializerSourceField;
   }
 
@@ -167,13 +198,16 @@ class SerializerSourceFieldBuilder
   _$SerializerSourceField build() {
     final _$result = _$v ??
         new _$SerializerSourceField._(
-            settings: settings,
-            parsedLibrary: parsedLibrary,
-            element: element,
+            settings: BuiltValueNullFieldError.checkNotNull(
+                settings, 'SerializerSourceField', 'settings'),
+            parsedLibrary: BuiltValueNullFieldError.checkNotNull(
+                parsedLibrary, 'SerializerSourceField', 'parsedLibrary'),
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'SerializerSourceField', 'element'),
             builderElement: builderElement);
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

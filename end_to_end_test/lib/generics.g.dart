@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of generics;
 
@@ -58,13 +59,13 @@ class _$GenericValueSerializer
 
     final result = isUnderspecified
         ? new GenericValueBuilder<Object>()
-        : serializers.newBuilder(specifiedType) as GenericValueBuilder;
+        : serializers.newBuilder(specifiedType) as GenericValueBuilder<Object>;
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'value':
           result.value =
@@ -114,13 +115,14 @@ class _$BoundGenericValueSerializer
 
     final result = isUnderspecified
         ? new BoundGenericValueBuilder<num>()
-        : serializers.newBuilder(specifiedType) as BoundGenericValueBuilder;
+        : serializers.newBuilder(specifiedType)
+            as BoundGenericValueBuilder<num>;
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'value':
           result.value =
@@ -175,13 +177,13 @@ class _$CollectionGenericValueSerializer
     final result = isUnderspecified
         ? new CollectionGenericValueBuilder<Object>()
         : serializers.newBuilder(specifiedType)
-            as CollectionGenericValueBuilder;
+            as CollectionGenericValueBuilder<Object>;
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'values':
           result.values.replace(serializers.deserialize(value,
@@ -233,7 +235,7 @@ class _$GenericContainerSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'genericValue':
           result.genericValue.replace(serializers.deserialize(value,
@@ -296,7 +298,7 @@ class _$NestedGenericContainerSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'map':
           result.map.replace(serializers.deserialize(value,
@@ -340,7 +342,7 @@ class _$ConcreteGenericSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'value':
           result.value = serializers.deserialize(value,
@@ -382,7 +384,7 @@ class _$NonBuiltGenericSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'value':
           result.value = serializers.deserialize(value,
@@ -405,9 +407,7 @@ class _$GenericValue<T> extends GenericValue<T> {
       (new GenericValueBuilder<T>()..update(updates)).build();
 
   _$GenericValue._({this.value}) : super._() {
-    if (value == null) {
-      throw new BuiltValueNullFieldError('GenericValue', 'value');
-    }
+    BuiltValueNullFieldError.checkNotNull(value, 'GenericValue', 'value');
     if (T == dynamic) {
       throw new BuiltValueMissingGenericsError('GenericValue', 'T');
     }
@@ -450,8 +450,9 @@ class GenericValueBuilder<T>
   GenericValueBuilder();
 
   GenericValueBuilder<T> get _$this {
-    if (_$v != null) {
-      _value = _$v.value;
+    final $v = _$v;
+    if ($v != null) {
+      _value = $v.value;
       _$v = null;
     }
     return this;
@@ -459,9 +460,7 @@ class GenericValueBuilder<T>
 
   @override
   void replace(GenericValue<T> other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$GenericValue<T>;
   }
 
@@ -472,7 +471,10 @@ class GenericValueBuilder<T>
 
   @override
   _$GenericValue<T> build() {
-    final _$result = _$v ?? new _$GenericValue<T>._(value: value);
+    final _$result = _$v ??
+        new _$GenericValue<T>._(
+            value: BuiltValueNullFieldError.checkNotNull(
+                value, 'GenericValue', 'value'));
     replace(_$result);
     return _$result;
   }
@@ -487,9 +489,7 @@ class _$BoundGenericValue<T extends num> extends BoundGenericValue<T> {
       (new BoundGenericValueBuilder<T>()..update(updates)).build();
 
   _$BoundGenericValue._({this.value}) : super._() {
-    if (value == null) {
-      throw new BuiltValueNullFieldError('BoundGenericValue', 'value');
-    }
+    BuiltValueNullFieldError.checkNotNull(value, 'BoundGenericValue', 'value');
     if (T == dynamic) {
       throw new BuiltValueMissingGenericsError('BoundGenericValue', 'T');
     }
@@ -534,8 +534,9 @@ class BoundGenericValueBuilder<T extends num>
   BoundGenericValueBuilder();
 
   BoundGenericValueBuilder<T> get _$this {
-    if (_$v != null) {
-      _value = _$v.value;
+    final $v = _$v;
+    if ($v != null) {
+      _value = $v.value;
       _$v = null;
     }
     return this;
@@ -543,9 +544,7 @@ class BoundGenericValueBuilder<T extends num>
 
   @override
   void replace(BoundGenericValue<T> other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$BoundGenericValue<T>;
   }
 
@@ -556,7 +555,10 @@ class BoundGenericValueBuilder<T extends num>
 
   @override
   _$BoundGenericValue<T> build() {
-    final _$result = _$v ?? new _$BoundGenericValue<T>._(value: value);
+    final _$result = _$v ??
+        new _$BoundGenericValue<T>._(
+            value: BuiltValueNullFieldError.checkNotNull(
+                value, 'BoundGenericValue', 'value'));
     replace(_$result);
     return _$result;
   }
@@ -571,9 +573,8 @@ class _$CollectionGenericValue<T> extends CollectionGenericValue<T> {
       (new CollectionGenericValueBuilder<T>()..update(updates)).build();
 
   _$CollectionGenericValue._({this.values}) : super._() {
-    if (values == null) {
-      throw new BuiltValueNullFieldError('CollectionGenericValue', 'values');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        values, 'CollectionGenericValue', 'values');
     if (T == dynamic) {
       throw new BuiltValueMissingGenericsError('CollectionGenericValue', 'T');
     }
@@ -619,8 +620,9 @@ class CollectionGenericValueBuilder<T>
   CollectionGenericValueBuilder();
 
   CollectionGenericValueBuilder<T> get _$this {
-    if (_$v != null) {
-      _values = _$v.values?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _values = $v.values.toBuilder();
       _$v = null;
     }
     return this;
@@ -628,9 +630,7 @@ class CollectionGenericValueBuilder<T>
 
   @override
   void replace(CollectionGenericValue<T> other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$CollectionGenericValue<T>;
   }
 
@@ -676,17 +676,12 @@ class _$GenericContainer extends GenericContainer {
   _$GenericContainer._(
       {this.genericValue, this.boundGenericValue, this.collectionGenericValue})
       : super._() {
-    if (genericValue == null) {
-      throw new BuiltValueNullFieldError('GenericContainer', 'genericValue');
-    }
-    if (boundGenericValue == null) {
-      throw new BuiltValueNullFieldError(
-          'GenericContainer', 'boundGenericValue');
-    }
-    if (collectionGenericValue == null) {
-      throw new BuiltValueNullFieldError(
-          'GenericContainer', 'collectionGenericValue');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        genericValue, 'GenericContainer', 'genericValue');
+    BuiltValueNullFieldError.checkNotNull(
+        boundGenericValue, 'GenericContainer', 'boundGenericValue');
+    BuiltValueNullFieldError.checkNotNull(
+        collectionGenericValue, 'GenericContainer', 'collectionGenericValue');
   }
 
   @override
@@ -750,10 +745,11 @@ class GenericContainerBuilder
   GenericContainerBuilder();
 
   GenericContainerBuilder get _$this {
-    if (_$v != null) {
-      _genericValue = _$v.genericValue?.toBuilder();
-      _boundGenericValue = _$v.boundGenericValue?.toBuilder();
-      _collectionGenericValue = _$v.collectionGenericValue?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _genericValue = $v.genericValue.toBuilder();
+      _boundGenericValue = $v.boundGenericValue.toBuilder();
+      _collectionGenericValue = $v.collectionGenericValue.toBuilder();
       _$v = null;
     }
     return this;
@@ -761,9 +757,7 @@ class GenericContainerBuilder
 
   @override
   void replace(GenericContainer other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$GenericContainer;
   }
 
@@ -801,6 +795,89 @@ class GenericContainerBuilder
   }
 }
 
+class _$DynamicGenericContainer extends DynamicGenericContainer {
+  @override
+  final Generic<dynamic> foo;
+
+  factory _$DynamicGenericContainer(
+          [void Function(DynamicGenericContainerBuilder) updates]) =>
+      (new DynamicGenericContainerBuilder()..update(updates)).build();
+
+  _$DynamicGenericContainer._({this.foo}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        foo, 'DynamicGenericContainer', 'foo');
+  }
+
+  @override
+  DynamicGenericContainer rebuild(
+          void Function(DynamicGenericContainerBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  DynamicGenericContainerBuilder toBuilder() =>
+      new DynamicGenericContainerBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is DynamicGenericContainer && foo == other.foo;
+  }
+
+  @override
+  int get hashCode {
+    return $jf($jc(0, foo.hashCode));
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper('DynamicGenericContainer')
+          ..add('foo', foo))
+        .toString();
+  }
+}
+
+class DynamicGenericContainerBuilder
+    implements
+        Builder<DynamicGenericContainer, DynamicGenericContainerBuilder> {
+  _$DynamicGenericContainer _$v;
+
+  Generic<dynamic> _foo;
+  Generic<dynamic> get foo => _$this._foo;
+  set foo(Generic<dynamic> foo) => _$this._foo = foo;
+
+  DynamicGenericContainerBuilder();
+
+  DynamicGenericContainerBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _foo = $v.foo;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(DynamicGenericContainer other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$DynamicGenericContainer;
+  }
+
+  @override
+  void update(void Function(DynamicGenericContainerBuilder) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$DynamicGenericContainer build() {
+    final _$result = _$v ??
+        new _$DynamicGenericContainer._(
+            foo: BuiltValueNullFieldError.checkNotNull(
+                foo, 'DynamicGenericContainer', 'foo'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
 class _$NestedGenericContainer extends NestedGenericContainer {
   @override
   final GenericValue<BuiltMap<int, String>> map;
@@ -810,9 +887,7 @@ class _$NestedGenericContainer extends NestedGenericContainer {
       (new NestedGenericContainerBuilder()..update(updates)).build();
 
   _$NestedGenericContainer._({this.map}) : super._() {
-    if (map == null) {
-      throw new BuiltValueNullFieldError('NestedGenericContainer', 'map');
-    }
+    BuiltValueNullFieldError.checkNotNull(map, 'NestedGenericContainer', 'map');
   }
 
   @override
@@ -855,8 +930,9 @@ class NestedGenericContainerBuilder
   NestedGenericContainerBuilder();
 
   NestedGenericContainerBuilder get _$this {
-    if (_$v != null) {
-      _map = _$v.map?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _map = $v.map.toBuilder();
       _$v = null;
     }
     return this;
@@ -864,9 +940,7 @@ class NestedGenericContainerBuilder
 
   @override
   void replace(NestedGenericContainer other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$NestedGenericContainer;
   }
 
@@ -906,9 +980,8 @@ class _$CustomBuilderGenericValue<T> extends CustomBuilderGenericValue<T> {
           as _$CustomBuilderGenericValue<T>;
 
   _$CustomBuilderGenericValue._({this.value}) : super._() {
-    if (value == null) {
-      throw new BuiltValueNullFieldError('CustomBuilderGenericValue', 'value');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        value, 'CustomBuilderGenericValue', 'value');
     if (T == dynamic) {
       throw new BuiltValueMissingGenericsError(
           'CustomBuilderGenericValue', 'T');
@@ -962,8 +1035,9 @@ class _$CustomBuilderGenericValueBuilder<T>
   _$CustomBuilderGenericValueBuilder() : super._();
 
   CustomBuilderGenericValueBuilder<T> get _$this {
-    if (_$v != null) {
-      super.value = _$v.value;
+    final $v = _$v;
+    if ($v != null) {
+      super.value = $v.value;
       _$v = null;
     }
     return this;
@@ -971,9 +1045,7 @@ class _$CustomBuilderGenericValueBuilder<T>
 
   @override
   void replace(CustomBuilderGenericValue<T> other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$CustomBuilderGenericValue<T>;
   }
 
@@ -984,7 +1056,10 @@ class _$CustomBuilderGenericValueBuilder<T>
 
   @override
   _$CustomBuilderGenericValue<T> build() {
-    final _$result = _$v ?? new _$CustomBuilderGenericValue<T>._(value: value);
+    final _$result = _$v ??
+        new _$CustomBuilderGenericValue<T>._(
+            value: BuiltValueNullFieldError.checkNotNull(
+                value, 'CustomBuilderGenericValue', 'value'));
     replace(_$result);
     return _$result;
   }
@@ -998,9 +1073,7 @@ class _$ConcreteGeneric extends ConcreteGeneric {
       (new ConcreteGenericBuilder()..update(updates)).build();
 
   _$ConcreteGeneric._({this.value}) : super._() {
-    if (value == null) {
-      throw new BuiltValueNullFieldError('ConcreteGeneric', 'value');
-    }
+    BuiltValueNullFieldError.checkNotNull(value, 'ConcreteGeneric', 'value');
   }
 
   @override
@@ -1040,8 +1113,9 @@ class ConcreteGenericBuilder
   ConcreteGenericBuilder();
 
   ConcreteGenericBuilder get _$this {
-    if (_$v != null) {
-      _value = _$v.value;
+    final $v = _$v;
+    if ($v != null) {
+      _value = $v.value;
       _$v = null;
     }
     return this;
@@ -1049,9 +1123,7 @@ class ConcreteGenericBuilder
 
   @override
   void replace(ConcreteGeneric other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ConcreteGeneric;
   }
 
@@ -1062,7 +1134,10 @@ class ConcreteGenericBuilder
 
   @override
   _$ConcreteGeneric build() {
-    final _$result = _$v ?? new _$ConcreteGeneric._(value: value);
+    final _$result = _$v ??
+        new _$ConcreteGeneric._(
+            value: BuiltValueNullFieldError.checkNotNull(
+                value, 'ConcreteGeneric', 'value'));
     replace(_$result);
     return _$result;
   }
@@ -1077,9 +1152,8 @@ class _$GenericFunction<T> extends GenericFunction<T> {
       (new GenericFunctionBuilder<T>()..update(updates)).build();
 
   _$GenericFunction._({this.function}) : super._() {
-    if (function == null) {
-      throw new BuiltValueNullFieldError('GenericFunction', 'function');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        function, 'GenericFunction', 'function');
     if (T == dynamic) {
       throw new BuiltValueMissingGenericsError('GenericFunction', 'T');
     }
@@ -1125,8 +1199,9 @@ class GenericFunctionBuilder<T>
   GenericFunctionBuilder();
 
   GenericFunctionBuilder<T> get _$this {
-    if (_$v != null) {
-      _function = _$v.function;
+    final $v = _$v;
+    if ($v != null) {
+      _function = $v.function;
       _$v = null;
     }
     return this;
@@ -1134,9 +1209,7 @@ class GenericFunctionBuilder<T>
 
   @override
   void replace(GenericFunction<T> other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$GenericFunction<T>;
   }
 
@@ -1147,7 +1220,10 @@ class GenericFunctionBuilder<T>
 
   @override
   _$GenericFunction<T> build() {
-    final _$result = _$v ?? new _$GenericFunction<T>._(function: function);
+    final _$result = _$v ??
+        new _$GenericFunction<T>._(
+            function: BuiltValueNullFieldError.checkNotNull(
+                function, 'GenericFunction', 'function'));
     replace(_$result);
     return _$result;
   }
@@ -1161,9 +1237,7 @@ class _$NonBuiltGeneric extends NonBuiltGeneric {
       (new NonBuiltGenericBuilder()..update(updates)).build();
 
   _$NonBuiltGeneric._({this.value}) : super._() {
-    if (value == null) {
-      throw new BuiltValueNullFieldError('NonBuiltGeneric', 'value');
-    }
+    BuiltValueNullFieldError.checkNotNull(value, 'NonBuiltGeneric', 'value');
   }
 
   @override
@@ -1203,8 +1277,9 @@ class NonBuiltGenericBuilder
   NonBuiltGenericBuilder();
 
   NonBuiltGenericBuilder get _$this {
-    if (_$v != null) {
-      _value = _$v.value;
+    final $v = _$v;
+    if ($v != null) {
+      _value = $v.value;
       _$v = null;
     }
     return this;
@@ -1212,9 +1287,7 @@ class NonBuiltGenericBuilder
 
   @override
   void replace(NonBuiltGeneric other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$NonBuiltGeneric;
   }
 
@@ -1225,10 +1298,13 @@ class NonBuiltGenericBuilder
 
   @override
   _$NonBuiltGeneric build() {
-    final _$result = _$v ?? new _$NonBuiltGeneric._(value: value);
+    final _$result = _$v ??
+        new _$NonBuiltGeneric._(
+            value: BuiltValueNullFieldError.checkNotNull(
+                value, 'NonBuiltGeneric', 'value'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

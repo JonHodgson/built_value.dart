@@ -1,6 +1,7 @@
 // Copyright (c) 2015, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library built_value_generator.source_class;
 
@@ -9,6 +10,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value_generator/src/analyzer.dart';
 import 'package:built_value_generator/src/enum_source_class.dart';
 import 'package:built_value_generator/src/enum_source_field.dart';
 import 'package:built_value_generator/src/fields.dart' show collectFields;
@@ -23,6 +25,7 @@ part 'serializer_source_class.g.dart';
 abstract class SerializerSourceClass
     implements Built<SerializerSourceClass, SerializerSourceClassBuilder> {
   ClassElement get element;
+
   @nullable
   ClassElement get builderElement;
 
@@ -31,15 +34,19 @@ abstract class SerializerSourceClass
           element: element,
           builderElement:
               element.library.getType(element.displayName + 'Builder'));
+
   SerializerSourceClass._();
 
   @memoized
   ParsedLibraryResult get parsedLibrary =>
-      element.library.session.getParsedLibraryByElement(element.library);
+      parsedLibraryResultOrThrowingMock(element.library);
 
   // TODO(davidmorgan): share common code in a nicer way.
   @memoized
   BuiltValue get builtValueSettings => ValueSourceClass(element).settings;
+
+  @memoized
+  bool get hasBuilder => builderElement != null;
 
   @memoized
   BuiltValueSerializer get serializerSettings {
@@ -59,9 +66,10 @@ abstract class SerializerSourceClass
     // If a field does not exist, that means an old `built_value` version; use
     // the default.
     return BuiltValueSerializer(
-        custom: annotation.getField('custom')?.toBoolValue() ?? false,
-        serializeNulls:
-            annotation.getField('serializeNulls')?.toBoolValue() ?? false);
+      custom: annotation.getField('custom')?.toBoolValue() ?? false,
+      serializeNulls:
+          annotation.getField('serializeNulls')?.toBoolValue() ?? false,
+    );
   }
 
   // TODO(davidmorgan): share common code in a nicer way.
@@ -71,6 +79,15 @@ abstract class SerializerSourceClass
 
   @memoized
   String get name => element.name;
+
+  @memoized
+  bool get isNonNullByDefault => element.library.isNonNullableByDefault;
+
+  @memoized
+  String get orNull => isNonNullByDefault ? '?' : '';
+
+  @memoized
+  String get notNull => isNonNullByDefault ? '!' : '';
 
   @memoized
   String get wireName {
@@ -118,7 +135,7 @@ abstract class SerializerSourceClass
       ? ''
       : '<' +
           genericBounds
-              .map((bound) => bound.isEmpty ? 'Object' : bound)
+              .map((bound) => bound.isEmpty ? 'Object$orNull' : bound)
               .join(', ') +
           '>';
 
@@ -231,18 +248,18 @@ abstract class SerializerSourceClass
 
     if (!serializerSettings.custom) {
       final expectedSerializerDeclaration =
-          'static Serializer<$genericName> get serializer => ${serializerInstanceName};';
+          'static Serializer<$genericName> get serializer => $serializerInstanceName;';
       // We used to recommend raw types; recommend the full type now, but still
       // allow raw types.
       final expectedSerializerDeclarationRaw =
-          'static Serializer<$name> get serializer => ${serializerInstanceName};';
+          'static Serializer<$name> get serializer => $serializerInstanceName;';
       if (serializerDeclaration != expectedSerializerDeclaration &&
           serializerDeclaration != expectedSerializerDeclarationRaw) {
         result.add('Declare $name.serializer as: '
             '$expectedSerializerDeclaration got $serializerDeclaration');
       }
       if (name.startsWith('_')) {
-        result.add('Cannot generate serializers for private class ${name}');
+        result.add('Cannot generate serializers for private class $name');
       }
     }
 
@@ -281,7 +298,7 @@ abstract class SerializerSourceClass
   }
 
   String generateSerializerDeclaration() =>
-      'Serializer<$genericName> ${serializerInstanceName} = new ${serializerImplName}();';
+      'Serializer<$genericName> $serializerInstanceName = new $serializerImplName();';
 
   /// Returns the class name for the generated implementation. If the manually
   /// maintained class is private then we ignore the underscore here, to avoid
@@ -293,25 +310,25 @@ abstract class SerializerSourceClass
   String generateSerializer() {
     if (isBuiltValue) {
       return '''
-class ${serializerImplName} implements StructuredSerializer<$genericName> {
+class $serializerImplName implements StructuredSerializer<$genericName> {
   @override
   final Iterable<Type> types = const [$name, $implName];
   @override
   final String wireName = '${escapeString(wireName)}';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, $genericName object,
+  Iterable<Object$orNull> serialize(Serializers serializers, $genericName object,
       {FullType specifiedType = FullType.unspecified}) {
-    ${fields.isEmpty ? 'return <Object>[];' : '''
+    ${fields.isEmpty ? 'return <Object$orNull>[];' : '''
     ${_generateGenericsSerializerPreamble()}
-    final result = <Object>[${_generateRequiredFieldSerializers()}];
+    final result = <Object$orNull>[${_generateRequiredFieldSerializers()}];
     ${_generateNullableFieldSerializers()}
     return result;
     '''}
   }
 
   @override
-  $genericName deserialize(Serializers serializers, Iterable<Object> serialized,
+  $genericName deserialize(Serializers serializers, Iterable<Object$orNull> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     ${_generateGenericsSerializerPreamble()}
     ${fields.isEmpty ? 'return ${_generateNewBuilder()}.build();' : '''
@@ -321,9 +338,8 @@ class ${serializerImplName} implements StructuredSerializer<$genericName> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
-      ${serializerSettings.serializeNulls ? 'if (value == null) continue;' : ''}'''
-              '''switch (key) {
+      final Object$orNull value = iterator.current;
+      switch (key) {
         ${_generateFieldDeserializers()}
       }
     }
@@ -394,7 +410,8 @@ class $serializerImplName implements PrimitiveSerializer<$genericName> {
   @override
   $genericName deserialize(Serializers serializers, Object serialized,
       {FullType specifiedType = FullType.unspecified}) =>
-    $name.valueOf(_fromWire[serialized] ?? serialized as String);
+    $name.valueOf(_fromWire[serialized] ?? (
+        serialized is String ? serialized : ''));
 }''';
       }
     } else {
@@ -404,7 +421,7 @@ class $serializerImplName implements PrimitiveSerializer<$genericName> {
 
   static String _toCode(Object object) {
     if (object is String) {
-      return "'$object'";
+      return "'${escapeString(object)}'";
     } else if (object is int) {
       return object.toString();
     } else {
@@ -414,10 +431,13 @@ class $serializerImplName implements PrimitiveSerializer<$genericName> {
 
   String _generateNewBuilder() {
     var parameters = _genericParametersUsedInFields;
-    if (parameters.isEmpty) return 'new ${name}Builder()';
+    if (parameters.isEmpty) {
+      return 'new ${name}Builder$genericBoundsOrObjectString()';
+    }
     return 'isUnderspecified ? '
         'new ${name}Builder$genericBoundsOrObjectString() : '
-        'serializers.newBuilder(specifiedType) as ${name}Builder';
+        'serializers.newBuilder(specifiedType) as '
+        '${name}Builder$genericBoundsOrObjectString';
   }
 
   BuiltList<String> get _genericParametersUsedInFields => BuiltList<String>(
@@ -455,31 +475,24 @@ class $serializerImplName implements PrimitiveSerializer<$genericName> {
   }
 
   String _generateNullableFieldSerializers() {
-    return fields.where((field) => field.isNullable).map((field) {
-      var serializeField = '''serializers.serialize(
-          object.${field.name},
+    var nullableFields = fields.where((field) => field.isNullable).toList();
+    if (nullableFields.isEmpty) return '';
+
+    return 'Object$orNull value;' +
+        nullableFields.map((field) {
+          var serializeField = '''serializers.serialize(
+          value,
           specifiedType:
           ${field.generateFullType(compilationUnit, genericParameters.toBuiltSet())})''';
 
-      // By default, omit nulls; but if we were asked to include nulls, just
-      // write them.
-      if (serializerSettings.serializeNulls) {
-        return '''
-          result.add('${escapeString(field.wireName)}');
-          if (object.${field.name} == null) {
-            result.add(null);
-          } else {
-            result.add($serializeField);
-          }''';
-      } else {
-        return '''
-          if (object.${field.name} != null) {
+          return '''
+          value = object.${field.name};
+          ${serializerSettings.serializeNulls ? '' : 'if (value != null) {'}
             result
               ..add('${escapeString(field.wireName)}')
               ..add($serializeField);
-          }''';
-      }
-    }).join('');
+          ${serializerSettings.serializeNulls ? '' : '}'}''';
+        }).join('');
   }
 
   /// Gets a map from generic parameter to its bound.
@@ -501,17 +514,28 @@ class $serializerImplName implements PrimitiveSerializer<$genericName> {
           compilationUnit, genericParameters.toBuiltSet());
       final cast = field.generateCast(compilationUnit, _genericBoundsAsMap);
       if (field.builderFieldUsesNestedBuilder) {
-        return '''
+        if (field.builderFieldAutoCreatesNestedBuilder || hasBuilder) {
+          return '''
 case '${escapeString(field.wireName)}':
   result.${field.name}.replace(serializers.deserialize(
-      value, specifiedType: $fullType) $cast);
+      value, specifiedType: $fullType)$notNull $cast);
   break;
 ''';
+        } else {
+          return '''
+case '${escapeString(field.wireName)}':
+  result.${field.name} = (serializers.deserialize(
+      value, specifiedType: $fullType) $cast).toBuilder();
+  break;
+''';
+        }
       } else {
+        // `cast` is empty if no cast is needed.
+        var maybeOrNull = field.isNullable && cast.isNotEmpty ? orNull : '';
         return '''
 case '${escapeString(field.wireName)}':
   result.${field.name} = serializers.deserialize(
-      value, specifiedType: $fullType) $cast;
+      value, specifiedType: $fullType) $cast$maybeOrNull;
   break;
 ''';
       }

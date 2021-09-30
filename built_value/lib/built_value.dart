@@ -2,6 +2,8 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+import 'package:meta/meta_meta.dart';
+
 /// Implement this for a Built Value.
 ///
 /// Then use built_value_generator.dart code generation functionality to
@@ -41,7 +43,7 @@ abstract class Builder<V extends Built<V, B>, B extends Builder<V, B>> {
   /// Applies updates.
   ///
   /// [updates] is a function that takes a builder [B].
-  void update(Function(B) updates);
+  void update(Function(B)? updates);
 
   /// Builds.
   ///
@@ -103,7 +105,11 @@ class BuiltValue {
 
   /// The wire name when the class is serialized. Defaults to `null` which
   /// indicates that the name is to be taken from the literal class name.
-  final String wireName;
+  final String? wireName;
+
+  /// The default expression for this value. Encapsulated in a string to allow
+  /// compilation.
+  final String? defaultValue;
 
   /// The default for [BuiltValueField.compare]. Set to `false` if you want to
   /// ignore most fields when comparing, then mark the ones you do want to
@@ -122,6 +128,7 @@ class BuiltValue {
       this.comparableBuilders = false,
       this.generateBuilderOnSetField = false,
       this.wireName,
+      this.defaultValue,
       this.defaultCompare = true,
       this.defaultSerialize = true});
 }
@@ -133,35 +140,51 @@ const String nullable = 'nullable';
 
 /// Optionally, annotate a Built Value field with this to specify settings.
 /// This is only needed for advanced use.
+@Target({TargetKind.getter})
 class BuiltValueField {
   /// Whether the field is compared and hashed. Defaults to `null` which means
   /// [BuiltValue.defaultCompare] is used.
   ///
   /// Set to `false` to ignore the field when calculating `hashCode` and when
   /// comparing with `operator==`.
-  final bool compare;
+  final bool? compare;
 
   /// Whether the field is serialized. Defaults to `null` which means
   /// [BuiltValue.defaultSerialize] is used.
   ///
   /// If a field is not serialized, it must either be `@nullable` or specify a
   /// default for deserialization to succeed.
-  final bool serialize;
+  final bool? serialize;
 
   /// The wire name when the field is serialized. Defaults to `null` which
   /// indicates the name is to be taken from the literal field name.
-  final String wireName;
+  final String? wireName;
 
   /// The default expression for this value. Encapsulated in a string to allow
   /// compilation.
-  final String defaultValue;
+  final String? defaultValue;
+
+  /// Whether the field overrides the `nestedBuilders` setting from the class. Defaults to `null` which
+  /// indicates the setting is to be taken from the `nestedBuilders` setting on the class.
+  final bool? nestedBuilder;
+
+  /// Whether the field overrides the `autoCreateNestedBuilders` setting from the class. Defaults to `null` which
+  /// indicates the setting is to be taken from the `autoCreateNestedBuilders` setting on the class.
+  final bool? autoCreateNestedBuilder;
 
   const BuiltValueField(
-      {this.compare, this.serialize, this.wireName, this.defaultValue});
+      {this.compare,
+      this.serialize,
+      this.wireName,
+      this.defaultValue,
+      this.nestedBuilder,
+      this.autoCreateNestedBuilder}
+      );
 }
 
 /// Optionally, annotate a Built Value `Serializer` getters with this to
 /// specify settings. This is only needed for advanced use.
+@Target({TargetKind.getter})
 class BuiltValueSerializer {
   /// Set this to `true` to stop Built Value from generating a serializer for
   /// you. The getter may then return any compatible `Serializer`. Defaults
@@ -171,6 +194,7 @@ class BuiltValueSerializer {
   /// Whether the generated serializer should output `null`s.
   ///
   /// By default this is `false` and nulls are omitted from the output.
+
   final bool serializeNulls;
 
   const BuiltValueSerializer(
@@ -185,30 +209,32 @@ const String memoized = 'memoized';
 
 /// Optionally, annotate an `EnumClass` with this to specify settings. This
 /// is only needed for advanced use.
+@Target({TargetKind.classType})
 class BuiltValueEnum {
   /// The wire name when the enum is serialized. Defaults to `null` which
   /// indicates that the name is to be taken from the literal class name.
-  final String wireName;
+  final String? wireName;
 
   const BuiltValueEnum({this.wireName});
 }
 
 /// Optionally, annotate an `EnumClass` constant with this to specify settings.
 /// This is only needed for advanced use.
+@Target({TargetKind.field})
 class BuiltValueEnumConst {
   /// The wire name when the constant is serialized. Defaults to `null` which
   /// indicates the name is to be taken from the literal field name.
   ///
   /// Or, set [wireNumber] to serialize to an `int`. Only one of the two may be
   /// used.
-  final String wireName;
+  final String? wireName;
 
   /// The wire name when the constant is serialized. Defaults to `null` which
   /// indicates the name is to be taken from the literal field name.
   ///
-  /// Or, set [wireNumber] to serialize to a `String`. Only one of the two may
+  /// Or, set [wireName] to serialize to a `String`. Only one of the two may
   /// be used.
-  final int wireNumber;
+  final int? wireNumber;
 
   /// Marks a value that is used as a fallback when an unrecognized value
   /// is encountered.
@@ -221,6 +247,46 @@ class BuiltValueEnumConst {
 
   const BuiltValueEnumConst(
       {this.wireName, this.wireNumber, this.fallback = false});
+}
+
+/// Optionally, annotate methods with this to cause them to be called by
+/// generated code.
+@Target({TargetKind.method})
+class BuiltValueHook {
+  /// Marks a static method that will be called when the builder for the
+  /// enclosing value type is initialized.
+  ///
+  /// The method must accept a builder of the enclosing value type.
+  ///
+  /// This example uses it to set a default value:
+  ///
+  /// ```
+  /// @BuiltValueHook(initializeBuilder: true)
+  /// static void _initializeBuilder(MyClassBuilder b) =>
+  ///    b..name = 'defaultName';
+  ///
+  /// Defaults to `false`.
+  /// ```
+  final bool initializeBuilder;
+
+  /// Marks a static method that will be called immediately before the builder
+  /// for the enclosing value type is built.
+  ///
+  /// The method must accept a builder of the enclosing value type.
+  ///
+  /// This example uses it to make `items` sorted:
+  ///
+  /// ```
+  /// @BuiltValueHook(initializeBuilder: true)
+  /// static void _finalizeBuilder(MyClassBuilder b) =>
+  ///    b..items.sort();
+  ///
+  /// Defaults to `false`.
+  /// ```
+  final bool finalizeBuilder;
+
+  const BuiltValueHook(
+      {this.initializeBuilder = false, this.finalizeBuilder = false});
 }
 
 /// Enum Class base class.
@@ -271,7 +337,7 @@ BuiltValueToStringHelperProvider newBuiltValueToStringHelper =
 /// version increase.
 abstract class BuiltValueToStringHelper {
   /// Add a field and its value.
-  void add(String field, Object value);
+  void add(String field, Object? value);
 
   /// Returns to completed toString(). The helper may not be used after this
   /// method is called.
@@ -281,17 +347,19 @@ abstract class BuiltValueToStringHelper {
 
 /// A [BuiltValueToStringHelper] that produces multi-line indented output.
 class IndentingBuiltValueToStringHelper implements BuiltValueToStringHelper {
-  StringBuffer _result = StringBuffer();
+  StringBuffer? _result = StringBuffer();
 
   IndentingBuiltValueToStringHelper(String className) {
-    _result..write(className)..write(' {\n');
+    _result!
+      ..write(className)
+      ..write(' {\n');
     _indentingBuiltValueToStringHelperIndent += 2;
   }
 
   @override
-  void add(String field, Object value) {
+  void add(String field, Object? value) {
     if (value != null) {
-      _result
+      _result!
         ..write(' ' * _indentingBuiltValueToStringHelperIndent)
         ..write(field)
         ..write('=')
@@ -303,7 +371,9 @@ class IndentingBuiltValueToStringHelper implements BuiltValueToStringHelper {
   @override
   String toString() {
     _indentingBuiltValueToStringHelperIndent -= 2;
-    _result..write(' ' * _indentingBuiltValueToStringHelperIndent)..write('}');
+    _result!
+      ..write(' ' * _indentingBuiltValueToStringHelperIndent)
+      ..write('}');
     var stringResult = _result.toString();
     _result = null;
     return stringResult;
@@ -314,25 +384,30 @@ int _indentingBuiltValueToStringHelperIndent = 0;
 
 /// A [BuiltValueToStringHelper] that produces single line output.
 class FlatBuiltValueToStringHelper implements BuiltValueToStringHelper {
-  StringBuffer _result = StringBuffer();
+  StringBuffer? _result = StringBuffer();
   bool _previousField = false;
 
   FlatBuiltValueToStringHelper(String className) {
-    _result..write(className)..write(' {');
+    _result!
+      ..write(className)
+      ..write(' {');
   }
 
   @override
-  void add(String field, Object value) {
+  void add(String field, Object? value) {
     if (value != null) {
-      if (_previousField) _result.write(',');
-      _result..write(field)..write('=')..write(value);
+      if (_previousField) _result!.write(',');
+      _result!
+        ..write(field)
+        ..write('=')
+        ..write(value);
       _previousField = true;
     }
   }
 
   @override
   String toString() {
-    _result..write('}');
+    _result!.write('}');
     var stringResult = _result.toString();
     _result = null;
     return stringResult;
@@ -346,6 +421,14 @@ class BuiltValueNullFieldError extends Error {
   final String field;
 
   BuiltValueNullFieldError(this.type, this.field);
+
+  /// Throws a [BuiltValueNullFieldError] if [value] is `null`.
+  static T checkNotNull<T>(T? value, String type, String field) {
+    if (value == null) {
+      throw BuiltValueNullFieldError(type, field);
+    }
+    return value;
+  }
 
   @override
   String toString() =>

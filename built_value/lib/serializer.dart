@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import 'package:built_collection/built_collection.dart';
+import 'package:built_collection/src/internal/hash.dart';
 import 'package:built_value/src/big_int_serializer.dart';
 import 'package:built_value/src/date_time_serializer.dart';
 import 'package:built_value/src/duration_serializer.dart';
@@ -10,7 +11,6 @@ import 'package:built_value/src/int64_serializer.dart';
 import 'package:built_value/src/json_object_serializer.dart';
 import 'package:built_value/src/num_serializer.dart';
 import 'package:built_value/src/uri_serializer.dart';
-import 'package:quiver/core.dart';
 
 import 'src/bool_serializer.dart';
 import 'src/built_json_serializers.dart';
@@ -22,6 +22,7 @@ import 'src/built_set_serializer.dart';
 import 'src/built_sorted_list_serializer.dart';
 import 'src/double_serializer.dart';
 import 'src/int_serializer.dart';
+import 'src/null_serializer.dart';
 import 'src/regexp_serializer.dart';
 import 'src/string_serializer.dart';
 
@@ -69,6 +70,7 @@ abstract class Serializers {
           ..add(IntSerializer())
           ..add(Int64Serializer())
           ..add(JsonObjectSerializer())
+          ..add(NullSerializer())
           ..add(NumSerializer())
           ..add(RegExpSerializer())
           ..add(StringSerializer())
@@ -100,6 +102,12 @@ abstract class Serializers {
   /// The installed [Serializer]s.
   Iterable<Serializer> get serializers;
 
+  /// The installed builder factories.
+  BuiltMap<FullType, Function> get builderFactories;
+
+  /// The installed serializer plugins.
+  Iterable<SerializerPlugin> get serializerPlugins;
+
   /// Serializes [object].
   ///
   /// A [Serializer] must have been provided for every type the object uses.
@@ -111,13 +119,19 @@ abstract class Serializers {
   /// Create one using [SerializersBuilder].
   ///
   /// TODO(davidmorgan): document the wire format.
-  Object serialize(Object object,
+  Object? serialize(Object? object,
       {FullType specifiedType = FullType.unspecified});
 
   /// Convenience method for when you know the type you're serializing.
   /// Specify the type by specifying its [Serializer] class. Equivalent to
   /// calling [serialize] with a `specifiedType`.
-  Object serializeWith<T>(Serializer<T> serializer, T object);
+  Object? serializeWith<T>(Serializer<T> serializer, T? object);
+
+  /// Convenience method for when you want a JSON string and know the type
+  /// you're serializing. Specify the type by specifying its [Serializer]
+  /// class. Equivalent to calling [serialize] with a `specifiedType` then
+  /// calling `json.encode`.
+  String toJson<T>(Serializer<T> serializer, T? object);
 
   /// Deserializes [serialized].
   ///
@@ -125,21 +139,27 @@ abstract class Serializers {
   ///
   /// If [serialized] was produced by calling [serialize] with [specifiedType],
   /// the exact same [specifiedType] must be provided to deserialize.
-  Object deserialize(Object serialized,
+  Object? deserialize(Object? serialized,
       {FullType specifiedType = FullType.unspecified});
 
   /// Convenience method for when you know the type you're deserializing.
   /// Specify the type by specifying its [Serializer] class. Equivalent to
   /// calling [deserialize] with a `specifiedType`.
-  T deserializeWith<T>(Serializer<T> serializer, Object serialized);
+  T? deserializeWith<T>(Serializer<T> serializer, Object? serialized);
+
+  /// Convenience method for when you have a JSON string and know the type
+  /// you're deserializing. Specify the type by specifying its [Serializer]
+  /// class. Equivalent to calling [deserialize] with a `specifiedType` then
+  /// calling `json.decode`.
+  T? fromJson<T>(Serializer<T> serializer, String serialized);
 
   /// Gets a serializer; returns `null` if none is found. For use in plugins
   /// and other extension code.
-  Serializer serializerForType(Type type);
+  Serializer? serializerForType(Type type);
 
   /// Gets a serializer; returns `null` if none is found. For use in plugins
   /// and other extension code.
-  Serializer serializerForWireName(String wireName);
+  Serializer? serializerForWireName(String wireName);
 
   /// Creates a new builder for the type represented by [fullType].
   ///
@@ -156,22 +176,19 @@ abstract class Serializers {
   /// Throws if a builder for [fullType] is not available via [newBuilder].
   void expectBuilder(FullType fullType);
 
-  /// The installed builder factories.
-  BuiltMap<FullType, Function> get builderFactories;
-
   SerializersBuilder toBuilder();
 }
 
 /// Note: this is an experimental feature. API may change without a major
 /// version increase.
 abstract class SerializerPlugin {
-  Object beforeSerialize(Object object, FullType specifiedType);
+  Object? beforeSerialize(Object? object, FullType specifiedType);
 
-  Object afterSerialize(Object object, FullType specifiedType);
+  Object? afterSerialize(Object? object, FullType specifiedType);
 
-  Object beforeDeserialize(Object object, FullType specifiedType);
+  Object? beforeDeserialize(Object? object, FullType specifiedType);
 
-  Object afterDeserialize(Object object, FullType specifiedType);
+  Object? afterDeserialize(Object? object, FullType specifiedType);
 }
 
 /// Builder for [Serializers].
@@ -231,20 +248,30 @@ class FullType {
   static const FullType object = FullType(Object);
 
   /// The root of the type.
-  final Type root;
+  final Type? root;
 
   /// Type parameters of the type.
   final List<FullType> parameters;
 
-  const FullType(this.root, [this.parameters = const []]);
+  /// Whether the type is nullable.
+  final bool nullable;
+
+  const FullType(this.root, [this.parameters = const []]) : nullable = false;
+  const FullType.nullable(this.root, [this.parameters = const []])
+      : nullable = true;
 
   bool get isUnspecified => identical(root, null);
+
+  FullType withNullability(bool nullability) => nullability
+      ? FullType.nullable(root, parameters)
+      : FullType(root, parameters);
 
   @override
   bool operator ==(dynamic other) {
     if (identical(other, this)) return true;
     if (other is! FullType) return false;
     if (root != other.root) return false;
+    if (nullable != other.nullable) return false;
     if (parameters.length != other.parameters.length) return false;
     for (var i = 0; i != parameters.length; ++i) {
       if (parameters[i] != other.parameters[i]) return false;
@@ -254,17 +281,20 @@ class FullType {
 
   @override
   int get hashCode {
-    return hash2(root, hashObjects(parameters));
+    return hash2(root, hashObjects(parameters)) ^ (nullable ? 0x696eefd9 : 0);
   }
 
   @override
   String toString() => isUnspecified
       ? 'unspecified'
-      : parameters.isEmpty
-          ? _getRawName(root)
-          : '${_getRawName(root)}<${parameters.join(", ")}>';
+      : (parameters.isEmpty
+              ? _getRawName(root)
+              : '${_getRawName(root)}<${parameters.join(", ")}>') +
+          _nullabilitySuffix;
 
-  static String _getRawName(Type type) {
+  String get _nullabilitySuffix => nullable ? '?' : '';
+
+  static String _getRawName(Type? type) {
     var name = type.toString();
     var genericsStart = name.indexOf('<');
     return genericsStart == -1 ? name : name.substring(0, genericsStart);
@@ -330,7 +360,7 @@ abstract class StructuredSerializer<T> implements Serializer<T> {
   /// JSON: booleans, integers, doubles, Strings and [Iterable]s.
   ///
   /// TODO(davidmorgan): document the wire format.
-  Iterable serialize(Serializers serializers, T object,
+  Iterable<Object?> serialize(Serializers serializers, T object,
       {FullType specifiedType = FullType.unspecified});
 
   /// Deserializes [serialized].
@@ -340,17 +370,17 @@ abstract class StructuredSerializer<T> implements Serializer<T> {
   ///
   /// Use [serializers] as needed for nested deserialization. Information about
   /// the type being deserialized is provided in [specifiedType].
-  T deserialize(Serializers serializers, Iterable serialized,
+  T deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified});
 }
 
 /// [Error] conveying why deserialization failed.
 class DeserializationError extends Error {
-  final String json;
+  final String? json;
   final FullType type;
   final Error error;
 
-  factory DeserializationError(Object json, FullType type, Error error) {
+  factory DeserializationError(Object? json, FullType type, Error error) {
     var limitedJson = json.toString();
     if (limitedJson.length > 80) {
       limitedJson = limitedJson.replaceRange(77, limitedJson.length, '...');

@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library collections;
 
@@ -33,34 +34,4 @@ abstract class Collections implements Built<Collections, CollectionsBuilder> {
   factory Collections([void Function(CollectionsBuilder) updates]) =
       _$Collections;
   Collections._();
-}
-
-// Class with collections and `serializeNulls: true` enabled.
-abstract class CollectionsWithNulls
-    implements Built<CollectionsWithNulls, CollectionsWithNullsBuilder> {
-  @BuiltValueSerializer(serializeNulls: true)
-  static Serializer<CollectionsWithNulls> get serializer =>
-      _$collectionsWithNullsSerializer;
-
-  BuiltList<int> get list;
-  BuiltSet<String> get set;
-  BuiltMap<String, int> get map;
-  BuiltListMultimap<int, bool> get listMultimap;
-  BuiltSetMultimap<String, bool> get setMultimap;
-
-  @nullable
-  BuiltList<int> get nullableList;
-  @nullable
-  BuiltSet<String> get nullableSet;
-  @nullable
-  BuiltMap<String, int> get nullableMap;
-  @nullable
-  BuiltListMultimap<int, bool> get nullableListMultimap;
-  @nullable
-  BuiltSetMultimap<String, bool> get nullableSetMultimap;
-
-  factory CollectionsWithNulls(
-          [void Function(CollectionsWithNullsBuilder) updates]) =
-      _$CollectionsWithNulls;
-  CollectionsWithNulls._();
 }

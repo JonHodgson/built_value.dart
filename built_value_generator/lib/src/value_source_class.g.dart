@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of built_value_generator.source_class;
 
@@ -11,6 +12,10 @@ class _$ValueSourceClass extends ValueSourceClass {
   final ClassElement element;
   ParsedLibraryResult __parsedLibrary;
   String __name;
+  bool __isNonNullByDefault;
+  String __orNull;
+  String __notNull;
+  String __late;
   String __implName;
   ClassElement __builderElement;
   bool __implementsBuilt;
@@ -24,6 +29,7 @@ class _$ValueSourceClass extends ValueSourceClass {
   MethodElement __builderInitializer;
   bool __hasBuilderFinalizer;
   MethodElement __builderFinalizer;
+  BuiltMap<String, BuiltValueHook> __hooks;
   String __builderParameters;
   BuiltList<ValueSourceField> __fields;
   String __source;
@@ -39,6 +45,7 @@ class _$ValueSourceClass extends ValueSourceClass {
   BuiltList<String> __builderClassFactories;
   BuiltList<MemoizedGetter> __memoizedGetters;
   BuiltList<String> __builderImplements;
+  BuiltList<String> __builderMixins;
   bool __implementsHashCode;
   bool __declaresMemoizedHashCode;
   bool __implementsOperatorEquals;
@@ -50,9 +57,8 @@ class _$ValueSourceClass extends ValueSourceClass {
       (new ValueSourceClassBuilder()..update(updates)).build();
 
   _$ValueSourceClass._({this.element}) : super._() {
-    if (element == null) {
-      throw new BuiltValueNullFieldError('ValueSourceClass', 'element');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        element, 'ValueSourceClass', 'element');
   }
 
   @override
@@ -61,6 +67,19 @@ class _$ValueSourceClass extends ValueSourceClass {
 
   @override
   String get name => __name ??= super.name;
+
+  @override
+  bool get isNonNullByDefault =>
+      __isNonNullByDefault ??= super.isNonNullByDefault;
+
+  @override
+  String get orNull => __orNull ??= super.orNull;
+
+  @override
+  String get notNull => __notNull ??= super.notNull;
+
+  @override
+  String get late => __late ??= super.late;
 
   @override
   String get implName => __implName ??= super.implName;
@@ -107,6 +126,9 @@ class _$ValueSourceClass extends ValueSourceClass {
   @override
   MethodElement get builderFinalizer =>
       __builderFinalizer ??= super.builderFinalizer;
+
+  @override
+  BuiltMap<String, BuiltValueHook> get hooks => __hooks ??= super.hooks;
 
   @override
   String get builderParameters =>
@@ -163,6 +185,10 @@ class _$ValueSourceClass extends ValueSourceClass {
   @override
   BuiltList<String> get builderImplements =>
       __builderImplements ??= super.builderImplements;
+
+  @override
+  BuiltList<String> get builderMixins =>
+      __builderMixins ??= super.builderMixins;
 
   @override
   bool get implementsHashCode =>
@@ -222,8 +248,9 @@ class ValueSourceClassBuilder
   ValueSourceClassBuilder();
 
   ValueSourceClassBuilder get _$this {
-    if (_$v != null) {
-      _element = _$v.element;
+    final $v = _$v;
+    if ($v != null) {
+      _element = $v.element;
       _$v = null;
     }
     return this;
@@ -231,9 +258,7 @@ class ValueSourceClassBuilder
 
   @override
   void replace(ValueSourceClass other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ValueSourceClass;
   }
 
@@ -244,10 +269,13 @@ class ValueSourceClassBuilder
 
   @override
   _$ValueSourceClass build() {
-    final _$result = _$v ?? new _$ValueSourceClass._(element: element);
+    final _$result = _$v ??
+        new _$ValueSourceClass._(
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'ValueSourceClass', 'element'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

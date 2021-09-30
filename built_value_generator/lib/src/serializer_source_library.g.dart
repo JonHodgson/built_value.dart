@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of built_value_generator.source_library;
 
@@ -12,6 +13,7 @@ class _$SerializerSourceLibrary extends SerializerSourceLibrary {
   ParsedLibraryResult __parsedLibrary;
   bool __hasSerializers;
   BuiltMap<String, ElementAnnotation> __serializersForAnnotations;
+  BuiltList<String> __wrongSerializersDeclarations;
   BuiltSet<SerializerSourceClass> __sourceClasses;
   BuiltSetMultimap<String, SerializerSourceClass> __serializeForClasses;
   BuiltSetMultimap<String, SerializerSourceClass>
@@ -22,9 +24,8 @@ class _$SerializerSourceLibrary extends SerializerSourceLibrary {
       (new SerializerSourceLibraryBuilder()..update(updates)).build();
 
   _$SerializerSourceLibrary._({this.element}) : super._() {
-    if (element == null) {
-      throw new BuiltValueNullFieldError('SerializerSourceLibrary', 'element');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        element, 'SerializerSourceLibrary', 'element');
   }
 
   @override
@@ -37,6 +38,10 @@ class _$SerializerSourceLibrary extends SerializerSourceLibrary {
   @override
   BuiltMap<String, ElementAnnotation> get serializersForAnnotations =>
       __serializersForAnnotations ??= super.serializersForAnnotations;
+
+  @override
+  BuiltList<String> get wrongSerializersDeclarations =>
+      __wrongSerializersDeclarations ??= super.wrongSerializersDeclarations;
 
   @override
   BuiltSet<SerializerSourceClass> get sourceClasses =>
@@ -91,8 +96,9 @@ class SerializerSourceLibraryBuilder
   SerializerSourceLibraryBuilder();
 
   SerializerSourceLibraryBuilder get _$this {
-    if (_$v != null) {
-      _element = _$v.element;
+    final $v = _$v;
+    if ($v != null) {
+      _element = $v.element;
       _$v = null;
     }
     return this;
@@ -100,9 +106,7 @@ class SerializerSourceLibraryBuilder
 
   @override
   void replace(SerializerSourceLibrary other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SerializerSourceLibrary;
   }
 
@@ -113,10 +117,13 @@ class SerializerSourceLibraryBuilder
 
   @override
   _$SerializerSourceLibrary build() {
-    final _$result = _$v ?? new _$SerializerSourceLibrary._(element: element);
+    final _$result = _$v ??
+        new _$SerializerSourceLibrary._(
+            element: BuiltValueNullFieldError.checkNotNull(
+                element, 'SerializerSourceLibrary', 'element'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

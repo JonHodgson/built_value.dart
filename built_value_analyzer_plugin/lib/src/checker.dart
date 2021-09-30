@@ -17,8 +17,8 @@ class Checker {
       // Don't analyze generated source; there's nothing to do.
       if (compilationUnit.source.fullName.endsWith('.g.dart')) continue;
 
-      for (var type in compilationUnit.types) {
-        if (!type.interfaces.any((i) => i.displayName.startsWith('Built'))) {
+      for (var type in compilationUnit.classes) {
+        if (!type.interfaces.any((i) => i.getDisplayString(withNullability: false).startsWith('Built'))) {
           continue;
         }
 

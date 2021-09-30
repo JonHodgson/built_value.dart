@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of imported_values;
 
@@ -45,7 +46,7 @@ class _$ImportedValueSerializer implements StructuredSerializer<ImportedValue> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'simpleValue':
           result.simpleValue.replace(serializers.deserialize(value,
@@ -102,7 +103,7 @@ class _$ImportedCustomValueSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'simpleValue':
           result.simpleValue = serializers.deserialize(value,
@@ -159,7 +160,7 @@ class _$ImportedCustomNestedValueSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'simpleValue':
           result.simpleValue.replace(serializers.deserialize(value,
@@ -189,12 +190,10 @@ class _$ImportedValue extends ImportedValue {
       (new ImportedValueBuilder()..update(updates)).build();
 
   _$ImportedValue._({this.simpleValue, this.simpleValues}) : super._() {
-    if (simpleValue == null) {
-      throw new BuiltValueNullFieldError('ImportedValue', 'simpleValue');
-    }
-    if (simpleValues == null) {
-      throw new BuiltValueNullFieldError('ImportedValue', 'simpleValues');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValue, 'ImportedValue', 'simpleValue');
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValues, 'ImportedValue', 'simpleValues');
   }
 
   @override
@@ -245,9 +244,10 @@ class ImportedValueBuilder
   ImportedValueBuilder();
 
   ImportedValueBuilder get _$this {
-    if (_$v != null) {
-      _simpleValue = _$v.simpleValue?.toBuilder();
-      _simpleValues = _$v.simpleValues?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _simpleValue = $v.simpleValue.toBuilder();
+      _simpleValues = $v.simpleValues.toBuilder();
       _$v = null;
     }
     return this;
@@ -255,9 +255,7 @@ class ImportedValueBuilder
 
   @override
   void replace(ImportedValue other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ImportedValue;
   }
 
@@ -304,12 +302,10 @@ class _$ImportedCustomValue extends ImportedCustomValue {
           as _$ImportedCustomValue;
 
   _$ImportedCustomValue._({this.simpleValue, this.simpleValues}) : super._() {
-    if (simpleValue == null) {
-      throw new BuiltValueNullFieldError('ImportedCustomValue', 'simpleValue');
-    }
-    if (simpleValues == null) {
-      throw new BuiltValueNullFieldError('ImportedCustomValue', 'simpleValues');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValue, 'ImportedCustomValue', 'simpleValue');
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValues, 'ImportedCustomValue', 'simpleValues');
   }
 
   @override
@@ -373,9 +369,10 @@ class _$ImportedCustomValueBuilder extends ImportedCustomValueBuilder {
   _$ImportedCustomValueBuilder() : super._();
 
   ImportedCustomValueBuilder get _$this {
-    if (_$v != null) {
-      super.simpleValue = _$v.simpleValue;
-      super.simpleValues = _$v.simpleValues;
+    final $v = _$v;
+    if ($v != null) {
+      super.simpleValue = $v.simpleValue;
+      super.simpleValues = $v.simpleValues;
       _$v = null;
     }
     return this;
@@ -383,9 +380,7 @@ class _$ImportedCustomValueBuilder extends ImportedCustomValueBuilder {
 
   @override
   void replace(ImportedCustomValue other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ImportedCustomValue;
   }
 
@@ -398,7 +393,10 @@ class _$ImportedCustomValueBuilder extends ImportedCustomValueBuilder {
   _$ImportedCustomValue build() {
     final _$result = _$v ??
         new _$ImportedCustomValue._(
-            simpleValue: simpleValue, simpleValues: simpleValues);
+            simpleValue: BuiltValueNullFieldError.checkNotNull(
+                simpleValue, 'ImportedCustomValue', 'simpleValue'),
+            simpleValues: BuiltValueNullFieldError.checkNotNull(
+                simpleValues, 'ImportedCustomValue', 'simpleValues'));
     replace(_$result);
     return _$result;
   }
@@ -417,14 +415,10 @@ class _$ImportedCustomNestedValue extends ImportedCustomNestedValue {
 
   _$ImportedCustomNestedValue._({this.simpleValue, this.simpleValues})
       : super._() {
-    if (simpleValue == null) {
-      throw new BuiltValueNullFieldError(
-          'ImportedCustomNestedValue', 'simpleValue');
-    }
-    if (simpleValues == null) {
-      throw new BuiltValueNullFieldError(
-          'ImportedCustomNestedValue', 'simpleValues');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValue, 'ImportedCustomNestedValue', 'simpleValue');
+    BuiltValueNullFieldError.checkNotNull(
+        simpleValues, 'ImportedCustomNestedValue', 'simpleValues');
   }
 
   @override
@@ -489,9 +483,10 @@ class _$ImportedCustomNestedValueBuilder
   _$ImportedCustomNestedValueBuilder() : super._();
 
   ImportedCustomNestedValueBuilder get _$this {
-    if (_$v != null) {
-      super.simpleValue = _$v.simpleValue?.toBuilder();
-      super.simpleValues = _$v.simpleValues?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      super.simpleValue = $v.simpleValue.toBuilder();
+      super.simpleValues = $v.simpleValues.toBuilder();
       _$v = null;
     }
     return this;
@@ -499,9 +494,7 @@ class _$ImportedCustomNestedValueBuilder
 
   @override
   void replace(ImportedCustomNestedValue other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ImportedCustomNestedValue;
   }
 
@@ -536,4 +529,4 @@ class _$ImportedCustomNestedValueBuilder
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

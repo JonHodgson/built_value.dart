@@ -1,5 +1,103 @@
 # Changelog
 
+# 8.1.2
+
+- Bump version of `analyzer`.
+
+# 8.1.1
+
+- Bug fix: allow constructors to have annotations. Previously, annotations
+  would cause codegen to fail.
+
+# 8.1.0
+
+New features:
+
+- Add `@BuiltValueHook` annotation. It provides the same functionality as
+  `_initializeBuilder` and `_finalizeBuilder`, but in a more visible way:
+  annotate a static method on the value class with `@BuiltValueHook` to
+  have it called on builder creation or finalization.
+- Add back `serializeNulls` to `BuiltValueSerializer` annotation. By default
+  generated serializers skip null fields instead of writing them; set
+  `serializeNulls` to write the nulls.
+
+New minor functionality:
+
+- Support use of nulls in collections when the key or value types are
+  explicitly nullable.
+- Allow `JsonObject` to be instantiated from a `Map<dynamic, dynamic>`.
+- Mark nested builder getters in `instantiable: false` classes not nullable,
+  to match the implementations. Use `autoCreateNestedBuilders: false` to get
+  the old behaviour.
+- Allow explicit nulls in JSON for nullable fields when deserializing.
+- Specify annotation targets; the analyzer will now hint if a `built_value`
+  annotation is used where it has no effect.
+- Support polymorphism with mixed in parent value type: generated builder
+  now mixes in parent builder.
+
+Bug fixes:
+
+- Fix support for serializing and deserializing nulls.
+- Fix `nestedBuilders: false` with `instantiable: false`.
+- Fix enum deserialization fallback for `int`.
+- Annotating a wrong type getter with `@SerializersFor` is now an error,
+  instead of just generating nothing.
+
+Cleanup:
+
+- Removed Angular mixin from example, as this feature is no longer needed:
+  Angular now directly supports using static members in templates.
+
+# 8.0.6
+
+- Bump versions of `build_config` and `build_runner`.
+
+# 8.0.5
+
+- Bump version of `analyzer`.
+
+# 8.0.4
+
+- Bump version of `source_gen`.
+
+# 8.0.3
+
+- Fix error message for builder factory not installed.
+- Bump version of `build`.
+
+# 8.0.2
+
+- Bump versions of `analyzer`, `quiver`.
+
+# 8.0.1
+
+- Update `chat` example to webdev.
+- Allow nulls when serializing/deserializing for better JSON interop.
+- Fix generation bugs around enum wire name and polymorphism.
+- Fix generation with generics for analysis with `strict-raw-types`.
+- Add test coverage around generation for generic serialization.
+- Add test coverage around initialization with generics.
+
+# 8.0.0
+
+- Stable null safe release.
+- Add `toJson` and `fromJson` convenience methods to `Serializers`.
+
+# 8.0.0-nullsafety.0
+
+- Migrate to NNBD.
+- Remove dependency on `package:quiver`.
+- Remove support for serializing nulls using
+  `BuiltValueSerializer(serializeNulls: true)`.
+- Make installed plugins public in `Serializers` as `serializerPlugins`.
+- `@memoized` fields can now memoize `null`; previously, nulls would not be
+  cached, causing the computation to rerun.
+
+# 7.1.1
+
+- Support analyzer `^0.40.0`.
+- Workaround https://github.com/google/built_value.dart/issues/941.
+
 # 7.1.0
 
 - Support private `Built` classes. Note that private classes cannot be made
@@ -547,7 +645,7 @@ Fixes:
 
 ## 1.0.0
 
-- Version bump to 1.0.0. Three minor features are marked as experimental and 
+- Version bump to 1.0.0. Three minor features are marked as experimental and
   may change without a major version increase: BuiltValueToStringHelper,
   JsonObject and SerializerPlugin.
 - Made toString() output customizable.
@@ -562,7 +660,7 @@ Fixes:
 
 - Add serializer for "DateTime" fields.
 - Add JsonObject class and serializer.
-- Add convenience methods Seralizers.serializeWith and deserializeWith. 
+- Add convenience methods Seralizers.serializeWith and deserializeWith.
 - Add example for using StandardJsonPlugin.
 - Support serializing NaN, INF and -INF for double and num.
 

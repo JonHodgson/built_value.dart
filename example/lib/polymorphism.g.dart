@@ -37,7 +37,7 @@ class _$CatSerializer implements StructuredSerializer<Cat> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'tail':
           result.tail = serializers.deserialize(value,
@@ -82,7 +82,7 @@ class _$FishSerializer implements StructuredSerializer<Fish> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'fins':
           result.fins = serializers.deserialize(value,
@@ -116,12 +116,8 @@ class _$Cat extends Cat {
       (new CatBuilder()..update(updates)).build();
 
   _$Cat._({this.tail, this.legs}) : super._() {
-    if (tail == null) {
-      throw new BuiltValueNullFieldError('Cat', 'tail');
-    }
-    if (legs == null) {
-      throw new BuiltValueNullFieldError('Cat', 'legs');
-    }
+    BuiltValueNullFieldError.checkNotNull(tail, 'Cat', 'tail');
+    BuiltValueNullFieldError.checkNotNull(legs, 'Cat', 'legs');
   }
 
   @override
@@ -156,18 +152,19 @@ class CatBuilder implements Builder<Cat, CatBuilder>, AnimalBuilder {
 
   bool _tail;
   bool get tail => _$this._tail;
-  set tail(bool tail) => _$this._tail = tail;
+  set tail(covariant bool tail) => _$this._tail = tail;
 
   int _legs;
   int get legs => _$this._legs;
-  set legs(int legs) => _$this._legs = legs;
+  set legs(covariant int legs) => _$this._legs = legs;
 
   CatBuilder();
 
   CatBuilder get _$this {
-    if (_$v != null) {
-      _tail = _$v.tail;
-      _legs = _$v.legs;
+    final $v = _$v;
+    if ($v != null) {
+      _tail = $v.tail;
+      _legs = $v.legs;
       _$v = null;
     }
     return this;
@@ -175,9 +172,7 @@ class CatBuilder implements Builder<Cat, CatBuilder>, AnimalBuilder {
 
   @override
   void replace(covariant Cat other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Cat;
   }
 
@@ -188,7 +183,10 @@ class CatBuilder implements Builder<Cat, CatBuilder>, AnimalBuilder {
 
   @override
   _$Cat build() {
-    final _$result = _$v ?? new _$Cat._(tail: tail, legs: legs);
+    final _$result = _$v ??
+        new _$Cat._(
+            tail: BuiltValueNullFieldError.checkNotNull(tail, 'Cat', 'tail'),
+            legs: BuiltValueNullFieldError.checkNotNull(legs, 'Cat', 'legs'));
     replace(_$result);
     return _$result;
   }
@@ -204,12 +202,8 @@ class _$Fish extends Fish {
       (new FishBuilder()..update(updates)).build();
 
   _$Fish._({this.fins, this.legs}) : super._() {
-    if (fins == null) {
-      throw new BuiltValueNullFieldError('Fish', 'fins');
-    }
-    if (legs == null) {
-      throw new BuiltValueNullFieldError('Fish', 'legs');
-    }
+    BuiltValueNullFieldError.checkNotNull(fins, 'Fish', 'fins');
+    BuiltValueNullFieldError.checkNotNull(legs, 'Fish', 'legs');
   }
 
   @override
@@ -244,18 +238,19 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   int _fins;
   int get fins => _$this._fins;
-  set fins(int fins) => _$this._fins = fins;
+  set fins(covariant int fins) => _$this._fins = fins;
 
   int _legs;
   int get legs => _$this._legs;
-  set legs(int legs) => _$this._legs = legs;
+  set legs(covariant int legs) => _$this._legs = legs;
 
   FishBuilder();
 
   FishBuilder get _$this {
-    if (_$v != null) {
-      _fins = _$v.fins;
-      _legs = _$v.legs;
+    final $v = _$v;
+    if ($v != null) {
+      _fins = $v.fins;
+      _legs = $v.legs;
       _$v = null;
     }
     return this;
@@ -263,9 +258,7 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   @override
   void replace(covariant Fish other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Fish;
   }
 
@@ -276,10 +269,13 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   @override
   _$Fish build() {
-    final _$result = _$v ?? new _$Fish._(fins: fins, legs: legs);
+    final _$result = _$v ??
+        new _$Fish._(
+            fins: BuiltValueNullFieldError.checkNotNull(fins, 'Fish', 'fins'),
+            legs: BuiltValueNullFieldError.checkNotNull(legs, 'Fish', 'legs'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

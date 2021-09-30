@@ -1,15 +1,13 @@
 import 'dart:async';
 
+// ignore: implementation_imports
+import 'package:analyzer/dart/analysis/context_builder.dart';
+import 'package:analyzer/dart/analysis/context_locator.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/file_system/file_system.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/context/builder.dart';
-// ignore: implementation_imports
-import 'package:analyzer/src/context/context_root.dart';
-// ignore: implementation_imports
 import 'package:analyzer/src/dart/analysis/driver.dart';
+import 'package:analyzer/src/dart/analysis/driver_based_analysis_context.dart';
 import 'package:analyzer_plugin/plugin/plugin.dart';
-import 'package:analyzer_plugin/protocol/protocol_common.dart' as plugin;
 import 'package:analyzer_plugin/protocol/protocol_generated.dart' as plugin;
 import 'package:built_value_analyzer_plugin/src/checker.dart';
 
@@ -24,17 +22,80 @@ class BuiltValueAnalyzerPlugin extends ServerPlugin {
 
   @override
   AnalysisDriverGeneric createAnalysisDriver(plugin.ContextRoot contextRoot) {
-    var root = ContextRoot(contextRoot.root, contextRoot.exclude,
+    final rootPath = contextRoot.root;
+    final locator =
+    ContextLocator(resourceProvider: resourceProvider).locateRoots(
+      includedPaths: [rootPath],
+      excludedPaths: contextRoot.exclude,
+      optionsFile: contextRoot.optionsFile,
+    );
+
+    if (locator.isEmpty) {
+      final error = StateError('Unexpected empty context');
+      channel.sendNotification(plugin.PluginErrorParams(
+        true,
+        error.message,
+        error.stackTrace.toString(),
+      ).toNotification());
+
+      throw error;
+    }
+
+    final builder = ContextBuilder(resourceProvider: resourceProvider);
+    final context = builder.createContext(contextRoot: locator.first)
+    as DriverBasedAnalysisContext;
+    final dartDriver = context.driver;
+   // final config = _createConfig(dartDriver, rootPath);
+
+ /*   if (config == null) {
+      return dartDriver;
+    }*/
+
+    // Temporary disable deprecation check
+    //
+    // final deprecations = checkConfigDeprecatedOptions(
+    //   config,
+    //   deprecatedOptions,
+    //   contextRoot.optionsFile!,
+    // );
+    // if (deprecations.isNotEmpty) {
+    //   channel.sendNotification(plugin.AnalysisErrorsParams(
+    //     contextRoot.optionsFile!,
+    //     deprecations.map((deprecation) => deprecation.error).toList(),
+    //   ).toNotification());
+    // }
+
+ /*   runZonedGuarded(
+          () {
+        dartDriver.results.listen((analysisResult) {
+          if (analysisResult is ResolvedUnitResult) {
+            _processResult(dartDriver, analysisResult);
+          }
+        });
+      },
+          (e, stackTrace) {
+        channel.sendNotification(
+          plugin.PluginErrorParams(false, e.toString(), stackTrace.toString())
+              .toNotification(),
+        );
+      },
+    );*/
+    dartDriver.results.listen(_processResult);
+    return dartDriver;
+
+/*    var folder = resourceProvider.getFolder(contextRoot.root);
+    var root = ContextRootImpl(resourceProvider, folder, contextRoot.exclude,
         pathContext: resourceProvider.pathContext)
       ..optionsFilePath = contextRoot.optionsFile;
-    var contextBuilder = ContextBuilder(resourceProvider, sdkManager, null)
-      ..analysisDriverScheduler = analysisDriverScheduler
-      ..byteStore = byteStore
-      ..performanceLog = performanceLog
-      ..fileContentOverlay = fileContentOverlay;
+    var contextBuilder = ContextBuilderImpl(resourceProvider: resourceProvider);
+    contextBuilder.createContext(contextRoot: root,
+      scheduler: analysisDriverScheduler,
+      byteStore: byteStore,
+      performanceLog: performanceLog);
+    //  ..fileContentOverlay = fileContentOverlay;
     var result = contextBuilder.buildDriver(root);
     result.results.listen(_processResult);
-    return result;
+    return result;*/
   }
 
   @override
@@ -53,7 +114,7 @@ class BuiltValueAnalyzerPlugin extends ServerPlugin {
 
   /// Computes errors based on an analysis result and notifies the analyzer.
   // ignore: deprecated_member_use
-  void _processResult(ResolveResult analysisResult) {
+  void _processResult(ResolvedUnitResult analysisResult) {
     try {
       // If there is no relevant analysis result, notify the analyzer of no errors.
       if (analysisResult.unit == null ||
@@ -89,10 +150,10 @@ class BuiltValueAnalyzerPlugin extends ServerPlugin {
     try {
       final analysisResult =
           await (driverForPath(parameters.file) as AnalysisDriver)
-              .getResult(parameters.file);
+              .getResult2(parameters.file);
 
       // Get errors and fixes for the file.
-      final checkResult = checker.check(analysisResult.libraryElement);
+      final checkResult = checker.check((analysisResult as ResolvedUnitResult).libraryElement);
 
       // Return any fixes that are for the expected file.
       final fixes = <plugin.AnalysisErrorFixes>[];

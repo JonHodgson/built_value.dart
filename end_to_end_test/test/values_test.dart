@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 import 'package:built_value/built_value.dart';
 import 'package:end_to_end_test/enums.dart';
@@ -194,10 +195,26 @@ void main() {
     });
   });
 
+  group('CompoundValueNoNestingField', () {
+    test('does not use nested builders', () {
+      CompoundValueNoNestingField((b) => b
+        ..simpleValue = SimpleValue((b) => b..anInt = 1)
+        ..simpleValueWithNested.anInt = 1);
+    });
+  });
+
+  group('CompoundValueNestingField', () {
+    test('does not use nested builders', () {
+      CompoundValueNestingField((b) => b
+        ..simpleValue = SimpleValue((b) => b..anInt = 1)
+        ..simpleValueWithNested.anInt = 1);
+    });
+  });
+
   group(CompoundValueNoAutoNesting, () {
     test('does not auto create nested builders', () {
       expect(() => CompoundValueNoAutoNesting((b) => b..value),
-          throwsA(const TypeMatcher<BuiltValueNestedFieldError>()));
+          throwsA(const TypeMatcher<BuiltValueNullFieldError>()));
     });
   });
 
@@ -306,12 +323,6 @@ void main() {
     test('validates on set', () {
       expect(() => ValueWithBuilderSmarts((b) => b..value = 'not allowed'),
           throwsA(const TypeMatcher<ArgumentError>()));
-    });
-  });
-
-  group('ValueUsingImportAs', () {
-    test('can be instantiated', () {
-      ValueUsingImportAs((b) => b..value = TestEnum.yes);
     });
   });
 

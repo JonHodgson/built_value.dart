@@ -1,3 +1,8 @@
+// Copyright (c) 2018, Google Inc. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+// @dart=2.11
+
 library polymorphism;
 
 import 'package:built_collection/built_collection.dart';
@@ -208,4 +213,32 @@ abstract class ImplementsTwo
   factory ImplementsTwo([void Function(ImplementsTwoBuilder) updates]) =
       _$ImplementsTwo;
   ImplementsTwo._();
+}
+
+// Check that `covariant` is added to setters.
+class IntentSlot<T, G extends Object> {}
+
+@BuiltValue(instantiable: false)
+abstract class Argument<T> {
+  IntentSlot<T, Object> get slot;
+}
+
+@BuiltValue(instantiable: false)
+abstract class GroundedArgument<T, G extends Object> implements Argument<T> {
+  @override
+  IntentSlot<T, G> get slot;
+}
+
+abstract class InstantiableGroundedArgument<T, G extends Object>
+    implements
+        Argument<T>,
+        Built<InstantiableGroundedArgument<T, G>,
+            InstantiableGroundedArgumentBuilder<T, G>> {
+  @override
+  IntentSlot<T, G> get slot;
+
+  InstantiableGroundedArgument._();
+  factory InstantiableGroundedArgument(
+          [void Function(InstantiableGroundedArgumentBuilder<T, G>) updates]) =
+      _$InstantiableGroundedArgument<T, G>;
 }

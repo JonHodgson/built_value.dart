@@ -1,6 +1,9 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
+
+import 'dart:convert';
 
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
@@ -17,7 +20,7 @@ void main() {
       ..anInt = 1
       ..aString = 'two'
       ..$mustBeEscaped = true);
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'SimpleValue',
       'anInt',
       1,
@@ -25,7 +28,7 @@ void main() {
       'two',
       '\$mustBeEscaped',
       true,
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -41,7 +44,7 @@ void main() {
       ..simpleValue.anInt = 1
       ..simpleValue.aString = 'two'
       ..validatedValue = ValidatedValue((b) => b.anInt = 3).toBuilder());
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'CompoundValue',
       'simpleValue',
       [
@@ -55,7 +58,7 @@ void main() {
         'anInt',
         3,
       ],
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -99,7 +102,7 @@ void main() {
         ..anInt = 1
         ..aString = 'two')
       ..validatedValue = ValidatedValue((b) => b.anInt = 3));
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'CompoundValueNoNesting',
       'simpleValue',
       [
@@ -113,7 +116,157 @@ void main() {
         'anInt',
         3,
       ],
-    ];
+    ])) as Object;
+
+    test('can be serialized', () {
+      expect(serializers.serialize(data), serialized);
+    });
+
+    test('can be deserialized', () {
+      expect(serializers.deserialize(serialized), data);
+    });
+  });
+
+  group('CompoundValueNoAutoNesting', () {
+    var data =
+        CompoundValueNoAutoNesting((b) => b..value = NoFieldsValueBuilder());
+    var serialized = json.decode(json.encode([
+      'CompoundValueNoAutoNesting',
+      'value',
+      <String>[],
+    ])) as Object;
+
+    test('can be serialized', () {
+      expect(serializers.serialize(data), serialized);
+    });
+
+    test('can be deserialized', () {
+      expect(serializers.deserialize(serialized), data);
+    });
+  });
+
+  group('CompoundValueNoNestingField', () {
+    var data = CompoundValueNoNestingField((b) => b
+      ..simpleValue = SimpleValue((b) => b
+        ..anInt = 1
+        ..aString = 'two')
+      ..validatedValue = ValidatedValue((b) => b.anInt = 3)
+      ..simpleValueWithNested.anInt = 1
+      ..simpleValueWithNested.aString = 'two'
+      ..validatedValueWithNested.anInt = 3);
+    var serialized = json.decode(json.encode([
+      'CompoundValueNoNestingField',
+      'simpleValue',
+      [
+        'anInt',
+        1,
+        'aString',
+        'two',
+      ],
+      'simpleValueWithNested',
+      [
+        'anInt',
+        1,
+        'aString',
+        'two',
+      ],
+      'validatedValue',
+      [
+        'anInt',
+        3,
+      ],
+      'validatedValueWithNested',
+      [
+        'anInt',
+        3,
+      ],
+    ])) as Object;
+
+    test('can be serialized', () {
+      expect(serializers.serialize(data), serialized);
+    });
+
+    test('can be deserialized', () {
+      expect(serializers.deserialize(serialized), data);
+    });
+  });
+
+  group('CompoundValueNestingField', () {
+    var data = CompoundValueNestingField((b) => b
+      ..simpleValue = SimpleValue((b) => b
+        ..anInt = 1
+        ..aString = 'two')
+      ..validatedValue = ValidatedValue((b) => b.anInt = 3)
+      ..simpleValueWithNested.anInt = 1
+      ..simpleValueWithNested.aString = 'two'
+      ..validatedValueWithNested.anInt = 3);
+    var serialized = json.decode(json.encode([
+      'CompoundValueNestingField',
+      'simpleValue',
+      [
+        'anInt',
+        1,
+        'aString',
+        'two',
+      ],
+      'simpleValueWithNested',
+      [
+        'anInt',
+        1,
+        'aString',
+        'two',
+      ],
+      'validatedValue',
+      [
+        'anInt',
+        3,
+      ],
+      'validatedValueWithNested',
+      [
+        'anInt',
+        3,
+      ],
+    ])) as Object;
+
+    test('can be serialized', () {
+      expect(serializers.serialize(data), serialized);
+    });
+
+    test('can be deserialized', () {
+      expect(serializers.deserialize(serialized), data);
+    });
+  });
+
+  group('CompoundValueNoAutoNestingField', () {
+    var data = CompoundValueNoAutoNestingField(
+        (b) => b..value = NoFieldsValueBuilder());
+    var serialized = json.decode(json.encode([
+      'CompoundValueNoAutoNestingField',
+      'value',
+      <String>[],
+      'valueWithAutoCreate',
+      <String>[],
+    ])) as Object;
+
+    test('can be serialized', () {
+      expect(serializers.serialize(data), serialized);
+    });
+
+    test('can be deserialized', () {
+      expect(serializers.deserialize(serialized), data);
+    });
+  });
+
+  group('CompoundValueAutoNestingField', () {
+    var data =
+        CompoundValueAutoNestingField((b) => b..value = NoFieldsValueBuilder());
+    var serialized = json.decode(json.encode([
+      'CompoundValueAutoNestingField',
+      'value',
+      <String>[],
+      'valueWithAutoCreate',
+      <String>[],
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -130,7 +283,7 @@ void main() {
         ..anInt = 1
         ..aString = 'two'))
       ..validatedValue = ValidatedValue((b) => b.anInt = 3));
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'CompoundValueExplicitNoNesting',
       'simpleValue',
       [
@@ -144,7 +297,7 @@ void main() {
         'anInt',
         3,
       ],
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -189,11 +342,11 @@ void main() {
 
   group('ValueUsingImportAs', () {
     var data = ValueUsingImportAs((b) => b.value = TestEnum.yes);
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'ValueUsingImportAs',
       'value',
       'yes',
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -217,7 +370,7 @@ void main() {
       ..regExp = RegExp(r'\w+@\d+')
       ..uri = Uri.parse('https://github.com/google/built_value.dart')
       ..bigInt = BigInt.parse('123456789012345678901234567890'));
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'PrimitivesValue',
       'boolean',
       true,
@@ -241,7 +394,7 @@ void main() {
       'https://github.com/google/built_value.dart',
       'bigInt',
       '123456789012345678901234567890',
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -254,7 +407,8 @@ void main() {
 
   group('NamedFactoryValue', () {
     var data = NamedFactoryValue(3);
-    var serialized = ['NamedFactoryValue', 'value', 3];
+    var serialized =
+        json.decode(json.encode(['NamedFactoryValue', 'value', 3])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -269,7 +423,7 @@ void main() {
     var data = FieldDiscoveryValue((b) => b
       ..value.value.value = 1
       ..values.add(ThirdDiscoverableValue((b) => b..value = 4)));
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'FieldDiscoveryValue',
       'value',
       [
@@ -283,7 +437,7 @@ void main() {
           4,
         ]
       ],
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -298,11 +452,11 @@ void main() {
     var data = PartiallySerializableValue((b) => b
       ..value = 1
       ..transientValue = 2);
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'PartiallySerializableValue',
       'value',
       1,
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -316,11 +470,11 @@ void main() {
 
   group('WireNameValue', () {
     var data = WireNameValue((b) => b..value = 1);
-    var serialized = [
+    var serialized = json.decode(json.encode([
       r'$V',
       r'$v',
       1,
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -333,20 +487,8 @@ void main() {
 
   group('ValueWithCustomSerializer', () {
     var data = ValueWithCustomSerializer((b) => b..value = 1);
-    var serialized = ['ValueWithCustomSerializer', 1];
-
-    test('can be serialized', () {
-      expect(serializers.serialize(data), serialized);
-    });
-
-    test('can be deserialized', () {
-      expect(serializers.deserialize(serialized), data);
-    });
-  });
-
-  group('SerializesNullsValue', () {
-    var data = SerializesNullsValue();
-    var serialized = ['SerializesNullsValue', 'value', null];
+    var serialized =
+        json.decode(json.encode(['ValueWithCustomSerializer', 1])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -359,7 +501,8 @@ void main() {
 
   group('OtherValue', () {
     var data = OtherValue((b) => b..other = 1);
-    var serialized = ['OtherValue', 'other', 1];
+    var serialized =
+        json.decode(json.encode(['OtherValue', 'other', 1])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -374,7 +517,7 @@ void main() {
     var data = ValueWithBuilderInitializer((b) => b
       ..anInt = 1
       ..nestedValue.anInt = 2);
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'ValueWithBuilderInitializer',
       'anInt',
       1,
@@ -388,7 +531,7 @@ void main() {
       8,
       'nullableNestedValueWithDefault',
       ['anInt', 10],
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);
@@ -412,7 +555,9 @@ void main() {
 
   group('ValueWithBuilderFinalizer', () {
     var data = ValueWithBuilderFinalizer((b) => b..anInt = 1);
-    var serialized = ['ValueWithBuilderFinalizer', 'anInt', 1];
+    var serialized =
+        json.decode(json.encode(['ValueWithBuilderFinalizer', 'anInt', 1]))
+            as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);

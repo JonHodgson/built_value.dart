@@ -1,13 +1,13 @@
 // Copyright (c) 2015, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:built_value_generator/built_value_generator.dart';
-import 'package:logging/logging.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
@@ -39,9 +39,9 @@ abstract class Value implements Built<Value, ValueBuilder> {}
       expect(await generate(r'''
 library value;
 
-part 'value.g.dart';
-
 import 'package:test_support/test_support.dart';
+
+part 'value.g.dart';
 
 abstract class Value implements Built<Value, ValueBuilder> {
   static Serializer<Value> get serializer => _$valueSerializer;
@@ -102,6 +102,38 @@ abstract class Value implements Built<Value, ValueBuilder> {
   factory Value([void Function(ValueBuilder) updates]) = _$Value;
 }
 '''), contains(r'_$serializers'));
+    });
+
+    test('errors on annotation on wrong declaration', () async {
+      expect(
+          await generate(r'''
+library value;
+
+import 'package:test_support/test_support.dart';
+
+part 'value.g.dart';
+
+@SerializersFor(const [Value])
+final serializers = _$serializers;
+
+@SerializersFor(const [Value])
+final int moreSerializers = _$moreSerializers;
+
+@SerializersFor(const [Value])
+final Serializers correctSerializers = _$correctSerializers;
+
+abstract class Value implements Built<Value, ValueBuilder> {
+  static Serializer<Value> get serializer => _$valueSerializer;
+  bool get aBool;
+  
+  Value._();
+  factory Value([void Function(ValueBuilder) updates]) = _$Value;
+}
+'''),
+          contains(
+              r'1. These top level getters are annotated @SerializersFor but '
+              'do not have the required type Serializers, please fix the type '
+              'or remove the annotation: serializers, moreSerializers'));
     });
 
     test('does not crash for incorrect builder getter', () async {
@@ -177,7 +209,7 @@ abstract class Value implements Built<Value, ValueBuilder> {
               '"function" or mark it "@BuiltValueField(serialize: false)".'));
     });
 
-    test('Cannot generate serializer for private classes', () async {
+    test('cannot generate serializer for private classes', () async {
       expect(await generate(r'''
 library value;
 
@@ -212,7 +244,7 @@ Future<String> generate(String source) async {
   // Capture any error from generation; if there is one, return that instead of
   // the generated output.
   String error;
-  void captureError(LogRecord logRecord) {
+  void captureError(dynamic logRecord) {
     if (logRecord.error is InvalidGenerationSourceError) {
       if (error != null) throw StateError('Expected at most one error.');
       error = logRecord.error.toString();

@@ -1,8 +1,10 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value_generator/src/value_source_class.dart';
@@ -26,12 +28,10 @@ class DartTypes {
         ValueSourceClass(type.element as ClassElement).settings.instantiable;
   }
 
-  static bool isBuiltValue(DartType type) {
-    if (type.element is! ClassElement) return false;
-    return (type.element as ClassElement)
-        .allSupertypes
-        .any((interfaceType) => interfaceType.element.name == 'Built');
-  }
+  static bool isBuiltValue(DartType type) =>
+      type is InterfaceType &&
+      type.element.allSupertypes
+          .any((interfaceType) => interfaceType.element.name == 'Built');
 
   static bool isBuiltCollection(DartType type) {
     return _builtCollectionNames
@@ -46,26 +46,36 @@ class DartTypes {
 
   /// Gets the name of a `DartType`. Supports `Function` types, which will
   /// be returned using the `Function()` syntax.
-  static String getName(DartType dartType) {
+  static String getName(DartType dartType,
+      {bool withNullabilitySuffix = false}) {
     if (dartType == null) {
       return null;
-    } else if (dartType.isDynamic) {
+    }
+
+    var suffix = withNullabilitySuffix &&
+            dartType.nullabilitySuffix == NullabilitySuffix.question
+        ? '?'
+        : '';
+
+    if (dartType.isDynamic) {
       return 'dynamic';
     } else if (dartType is FunctionType) {
       return getName(dartType.returnType) +
           ' Function(' +
           dartType.parameters.map((p) => getName(p.type)).join(', ') +
-          ')';
+          ')$suffix';
     } else if (dartType is InterfaceType) {
       var typeArguments = dartType.typeArguments;
-      if (typeArguments.isEmpty || typeArguments.every((t) => t.isDynamic)) {
-        return dartType.element.name;
+      if (typeArguments.isEmpty) {
+        return dartType.element.name + suffix;
       } else {
-        final typeArgumentsStr = typeArguments.map(getName).join(', ');
-        return '${dartType.element.name}<$typeArgumentsStr>';
+        final typeArgumentsStr = typeArguments
+            .map((type) => getName(type, withNullabilitySuffix: true))
+            .join(', ');
+        return '${dartType.element.name}<$typeArgumentsStr>$suffix';
       }
     } else if (dartType is TypeParameterType) {
-      return dartType.element.name;
+      return dartType.element.name + suffix;
     } else if (dartType.isVoid) {
       return 'void';
     } else {

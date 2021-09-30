@@ -1,3 +1,7 @@
+// Copyright (c) 2015, Google Inc. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
@@ -27,7 +31,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   StandardJsonPlugin({this.discriminator = r'$', this.valueKey = ''});
 
   @override
-  Object beforeSerialize(Object object, FullType specifiedType) {
+  Object? beforeSerialize(Object? object, FullType specifiedType) {
     if (_unsupportedTypes.contains(specifiedType.root)) {
       throw ArgumentError(
           'Standard JSON cannot serialize type ${specifiedType.root}.');
@@ -36,7 +40,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   }
 
   @override
-  Object afterSerialize(Object object, FullType specifiedType) {
+  Object? afterSerialize(Object? object, FullType specifiedType) {
     if (object is List &&
         specifiedType.root != BuiltList &&
         specifiedType.root != BuiltSet &&
@@ -52,12 +56,13 @@ class StandardJsonPlugin implements SerializerPlugin {
   }
 
   @override
-  Object beforeDeserialize(Object object, FullType specifiedType) {
+  Object? beforeDeserialize(Object? object, FullType specifiedType) {
     if (object is Map && specifiedType.root != JsonObject) {
       if (specifiedType.isUnspecified) {
         return _toListUsingDiscriminator(object);
       } else {
-        return _toList(object, _needsEncodedKeys(specifiedType));
+        return _toList(object, _needsEncodedKeys(specifiedType),
+            keepNulls: specifiedType.root == BuiltMap);
       }
     } else {
       return object;
@@ -65,7 +70,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   }
 
   @override
-  Object afterDeserialize(Object object, FullType specifiedType) {
+  Object? afterDeserialize(Object? object, FullType specifiedType) {
     return object;
   }
 
@@ -78,7 +83,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   /// Converts serialization output, a `List`, to a `Map`, when the serialized
   /// type is known statically.
   Map _toMap(List list, bool needsEncodedKeys) {
-    var result = <String, Object>{};
+    var result = <String, Object?>{};
     for (var i = 0; i != list.length ~/ 2; ++i) {
       final key = list[i * 2];
       final value = list[i * 2 + 1];
@@ -102,7 +107,7 @@ class StandardJsonPlugin implements SerializerPlugin {
     // the value.
     if (list.length == 2) {
       // Just a type and a primitive value. Encode the value in the map.
-      return <String, Object>{discriminator: type, valueKey: list[1]};
+      return <String, Object?>{discriminator: type, valueKey: list[1]};
     }
 
     // If a map has non-String keys then they need encoding to strings before
@@ -139,12 +144,19 @@ class StandardJsonPlugin implements SerializerPlugin {
 
   /// Converts [StandardJsonPlugin] serialization output, a `Map`, to a `List`,
   /// when the serialized type is known statically.
-  List _toList(Map map, bool hasEncodedKeys) {
-    var result = List(map.length * 2);
+  ///
+  /// By default keys with null values are dropped, pass [keepNulls] true when
+  /// the map is an actual map with nullable values, so they should be kept.
+  List<Object?> _toList(Map map, bool hasEncodedKeys,
+      {bool keepNulls = false}) {
+    var nullValueCount =
+        keepNulls ? 0 : map.values.where((value) => value == null).length;
+    var result = List<Object?>.filled(
+        (map.length - nullValueCount) * 2, 0 /* Will be overwritten. */);
     var i = 0;
     map.forEach((key, value) {
       // Drop null values, they are represented by missing keys.
-      if (value == null) return;
+      if (!keepNulls && value == null) return;
 
       result[i] = hasEncodedKeys ? _decodeKey(key as String) : key;
       result[i + 1] = value;
@@ -156,7 +168,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   /// Converts [StandardJsonPlugin] serialization output, a `Map`, to a `List`,
   /// when the serialized type is not known statically. The type is retrieved
   /// from the [discriminator] field.
-  List _toListUsingDiscriminator(Map map) {
+  List<Object?> _toListUsingDiscriminator(Map map) {
     var type = map[discriminator];
 
     if (type == null) {
@@ -170,7 +182,7 @@ class StandardJsonPlugin implements SerializerPlugin {
 
     if (map.containsKey(valueKey)) {
       // Just a type and a primitive value. Retrieve the value in the map.
-      final result = List(2);
+      final result = List<Object?>.filled(2, 0 /* Will be overwritten. */);
       result[0] = type;
       result[1] = map[valueKey];
       return result;
@@ -184,7 +196,9 @@ class StandardJsonPlugin implements SerializerPlugin {
       type = 'map';
     }
 
-    var result = List(map.length * 2 - 1);
+    var nullValueCount = map.values.where((value) => value == null).length;
+    var result = List<Object>.filled(
+        (map.length - nullValueCount) * 2 - 1, 0 /* Will be overwritten. */);
     result[0] = type;
 
     var i = 1;
@@ -202,7 +216,7 @@ class StandardJsonPlugin implements SerializerPlugin {
   }
 
   /// JSON-decodes a `String` encoded using [_encodeKey].
-  Object _decodeKey(String key) {
+  Object? _decodeKey(String key) {
     return json.decode(key);
   }
 }

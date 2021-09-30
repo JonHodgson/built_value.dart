@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of enums;
 
@@ -117,11 +118,14 @@ final BuiltSet<WireNumberEnum> _$wireNumberValues =
 ]);
 
 const DollarValueEnum _$value$ = const DollarValueEnum._('value\$');
+const DollarValueEnum _$value2 = const DollarValueEnum._('value2');
 
 DollarValueEnum _$dollarValueOf(String name) {
   switch (name) {
     case 'value\$':
       return _$value$;
+    case 'value2':
+      return _$value2;
     default:
       throw new ArgumentError(name);
   }
@@ -130,6 +134,7 @@ DollarValueEnum _$dollarValueOf(String name) {
 final BuiltSet<DollarValueEnum> _$dollarValues =
     new BuiltSet<DollarValueEnum>(const <DollarValueEnum>[
   _$value$,
+  _$value2,
 ]);
 
 const FallbackEnum _$fbYes = const FallbackEnum._('yes');
@@ -150,6 +155,26 @@ final BuiltSet<FallbackEnum> _$fbValues =
     new BuiltSet<FallbackEnum>(const <FallbackEnum>[
   _$fbYes,
   _$fbNo,
+]);
+
+const DeprecatedEnum _$dYes = const DeprecatedEnum._('yes');
+const DeprecatedEnum _$dNo = const DeprecatedEnum._('no');
+
+DeprecatedEnum _$dValueOf(String name) {
+  switch (name) {
+    case 'yes':
+      return _$dYes;
+    case 'no':
+      return _$dNo;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<DeprecatedEnum> _$dValues =
+    new BuiltSet<DeprecatedEnum>(const <DeprecatedEnum>[
+  _$dYes,
+  _$dNo,
 ]);
 
 Serializer<TestEnum> _$testEnumSerializer = new _$TestEnumSerializer();
@@ -204,7 +229,8 @@ class _$WireNameEnumSerializer implements PrimitiveSerializer<WireNameEnum> {
   @override
   WireNameEnum deserialize(Serializers serializers, Object serialized,
           {FullType specifiedType = FullType.unspecified}) =>
-      WireNameEnum.valueOf(_fromWire[serialized] ?? serialized as String);
+      WireNameEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
 }
 
 class _$WireNumberEnumSerializer
@@ -233,11 +259,19 @@ class _$WireNumberEnumSerializer
   @override
   WireNumberEnum deserialize(Serializers serializers, Object serialized,
           {FullType specifiedType = FullType.unspecified}) =>
-      WireNumberEnum.valueOf(_fromWire[serialized] ?? serialized as String);
+      WireNumberEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
 }
 
 class _$DollarValueEnumSerializer
     implements PrimitiveSerializer<DollarValueEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'value2': 'value2\$',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'value2\$': 'value2',
+  };
+
   @override
   final Iterable<Type> types = const <Type>[DollarValueEnum];
   @override
@@ -246,12 +280,13 @@ class _$DollarValueEnumSerializer
   @override
   Object serialize(Serializers serializers, DollarValueEnum object,
           {FullType specifiedType = FullType.unspecified}) =>
-      object.name;
+      _toWire[object.name] ?? object.name;
 
   @override
   DollarValueEnum deserialize(Serializers serializers, Object serialized,
           {FullType specifiedType = FullType.unspecified}) =>
-      DollarValueEnum.valueOf(serialized as String);
+      DollarValueEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
 }
 
 class _$FallbackEnumSerializer implements PrimitiveSerializer<FallbackEnum> {
@@ -271,4 +306,4 @@ class _$FallbackEnumSerializer implements PrimitiveSerializer<FallbackEnum> {
       FallbackEnum.valueOf(serialized as String);
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

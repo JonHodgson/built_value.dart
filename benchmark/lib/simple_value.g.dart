@@ -16,12 +16,8 @@ class _$SimpleValue extends SimpleValue {
       (new SimpleValueBuilder()..update(updates)).build();
 
   _$SimpleValue._({this.anInt, this.aString}) : super._() {
-    if (anInt == null) {
-      throw new BuiltValueNullFieldError('SimpleValue', 'anInt');
-    }
-    if (aString == null) {
-      throw new BuiltValueNullFieldError('SimpleValue', 'aString');
-    }
+    BuiltValueNullFieldError.checkNotNull(anInt, 'SimpleValue', 'anInt');
+    BuiltValueNullFieldError.checkNotNull(aString, 'SimpleValue', 'aString');
   }
 
   @override
@@ -67,9 +63,10 @@ class SimpleValueBuilder implements Builder<SimpleValue, SimpleValueBuilder> {
   SimpleValueBuilder();
 
   SimpleValueBuilder get _$this {
-    if (_$v != null) {
-      _anInt = _$v.anInt;
-      _aString = _$v.aString;
+    final $v = _$v;
+    if ($v != null) {
+      _anInt = $v.anInt;
+      _aString = $v.aString;
       _$v = null;
     }
     return this;
@@ -77,9 +74,7 @@ class SimpleValueBuilder implements Builder<SimpleValue, SimpleValueBuilder> {
 
   @override
   void replace(SimpleValue other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$SimpleValue;
   }
 
@@ -90,10 +85,15 @@ class SimpleValueBuilder implements Builder<SimpleValue, SimpleValueBuilder> {
 
   @override
   _$SimpleValue build() {
-    final _$result = _$v ?? new _$SimpleValue._(anInt: anInt, aString: aString);
+    final _$result = _$v ??
+        new _$SimpleValue._(
+            anInt: BuiltValueNullFieldError.checkNotNull(
+                anInt, 'SimpleValue', 'anInt'),
+            aString: BuiltValueNullFieldError.checkNotNull(
+                aString, 'SimpleValue', 'aString'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

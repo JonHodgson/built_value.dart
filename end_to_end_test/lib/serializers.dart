@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library serializers;
 
@@ -24,9 +25,13 @@ part 'serializers.g.dart';
   Cage,
   CollectionGenericValue,
   Collections,
-  CollectionsWithNulls,
   CompoundValue,
+  CompoundValueNoNestingField,
+  CompoundValueNestingField,
   CompoundValueExplicitNoNesting,
+  CompoundValueNoAutoNesting,
+  CompoundValueNoAutoNestingField,
+  CompoundValueAutoNestingField,
   CompoundValueNoNesting,
   ConcreteGeneric,
   EnumWithInt,
@@ -50,7 +55,6 @@ part 'serializers.g.dart';
   RecursiveValueB,
   Robot,
   SecondTestEnum,
-  SerializesNullsValue,
   SimpleValue,
   StandardCat,
   StandardJsonValue,

@@ -1,6 +1,9 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
+
+import 'dart:convert';
 
 import 'package:end_to_end_test/collections.dart';
 import 'package:end_to_end_test/serializers.dart';
@@ -14,7 +17,7 @@ void main() {
       ..map['three'] = 4
       ..listMultimap.addValues(4, [true, false])
       ..setMultimap.addValues('five', [true, false]));
-    var serialized = [
+    var serialized = json.decode(json.encode([
       'Collections',
       'list',
       [1],
@@ -32,53 +35,7 @@ void main() {
         'five',
         [true, false]
       ],
-    ];
-
-    test('can be serialized', () {
-      expect(serializers.serialize(data), serialized);
-    });
-
-    test('can be deserialized', () {
-      expect(serializers.deserialize(serialized), data);
-    });
-  });
-
-  group('CollectionsWithNulls', () {
-    var data = CollectionsWithNulls((b) => b
-      ..list.add(1)
-      ..set.add('two')
-      ..map['three'] = 4
-      ..listMultimap.addValues(4, [true, false])
-      ..setMultimap.addValues('five', [true, false]));
-    var serialized = [
-      'CollectionsWithNulls',
-      'list',
-      [1],
-      'set',
-      ['two'],
-      'map',
-      ['three', 4],
-      'listMultimap',
-      [
-        4,
-        [true, false]
-      ],
-      'setMultimap',
-      [
-        'five',
-        [true, false]
-      ],
-      'nullableList',
-      null,
-      'nullableSet',
-      null,
-      'nullableMap',
-      null,
-      'nullableListMultimap',
-      null,
-      'nullableSetMultimap',
-      null,
-    ];
+    ])) as Object;
 
     test('can be serialized', () {
       expect(serializers.serialize(data), serialized);

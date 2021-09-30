@@ -67,7 +67,9 @@ void main() {
       final alice = environment.newUser();
       final bob = environment.newUser();
 
-      alice..type('/login Alice letmein')..type('Hi, Bob!');
+      alice
+        ..type('/login Alice letmein')
+        ..type('Hi, Bob!');
       bob.expectMatch('Alice: Hi, Bob!');
     });
 
@@ -82,7 +84,7 @@ void main() {
 
     test('logs out existing user', () async {
       final alice = environment.newUser()..type('/login Alice letmein');
-      environment.newUser()..type('/login Alice letmein');
+      environment.newUser().type('/login Alice letmein');
 
       alice.expectMatch(LoginResponse.reset.render());
     });
@@ -97,7 +99,7 @@ void main() {
 
     test('shows online users', () async {
       final alice = environment.newUser()..type('/login Alice letmein');
-      environment.newUser()..type('/login Bob letmein');
+      environment.newUser().type('/login Bob letmein');
 
       alice
         ..type('/list')
@@ -192,7 +194,7 @@ Bob
       final eve = environment.newUser();
 
       alice.type('/tell Bob Hi there.');
-      bob..expectMatch(r'Alice \(private\): Hi there.');
+      bob.expectMatch(r'Alice \(private\): Hi there.');
       eve.expectNoMatch('Hi there.');
     });
   });

@@ -43,13 +43,13 @@ void main() {
     testTable.forEach((testValue) {
       test('can be serialized', () {
         expect(
-            serializers.serialize(testValue[#d], specifiedType: specifiedType),
+            serializers.serialize(testValue[#d]!, specifiedType: specifiedType),
             testValue[#s]);
       });
 
       test('can be deserialized', () {
         expect(
-            serializers.deserialize(testValue[#s],
+            serializers.deserialize(testValue[#s]!,
                 specifiedType: specifiedType),
             testValue[#d]);
       });
@@ -68,7 +68,7 @@ void main() {
     testTable.forEach((testValue) {
       test('can be serialized', () {
         expect(
-            serializers.serialize(testValue[#d], specifiedType: specifiedType),
+            serializers.serialize(testValue[#d]!, specifiedType: specifiedType),
             ['Duration', testValue[#s]]);
       });
 

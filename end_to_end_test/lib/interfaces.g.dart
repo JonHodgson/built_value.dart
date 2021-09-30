@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of interfaces;
 
@@ -64,7 +65,7 @@ class _$ValueWithIntSerializer implements StructuredSerializer<ValueWithInt> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'anInt':
           result.anInt = serializers.deserialize(value,
@@ -127,7 +128,7 @@ class _$ValueWithHasIntSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'hasInt':
           result.hasInt = serializers.deserialize(value,
@@ -150,12 +151,8 @@ class _$ValueWithInt extends ValueWithInt {
       (new ValueWithIntBuilder()..update(updates)).build();
 
   _$ValueWithInt._({this.anInt, this.note}) : super._() {
-    if (anInt == null) {
-      throw new BuiltValueNullFieldError('ValueWithInt', 'anInt');
-    }
-    if (note == null) {
-      throw new BuiltValueNullFieldError('ValueWithInt', 'note');
-    }
+    BuiltValueNullFieldError.checkNotNull(anInt, 'ValueWithInt', 'anInt');
+    BuiltValueNullFieldError.checkNotNull(note, 'ValueWithInt', 'note');
   }
 
   @override
@@ -200,9 +197,10 @@ class ValueWithIntBuilder
   ValueWithIntBuilder();
 
   ValueWithIntBuilder get _$this {
-    if (_$v != null) {
-      _anInt = _$v.anInt;
-      _note = _$v.note;
+    final $v = _$v;
+    if ($v != null) {
+      _anInt = $v.anInt;
+      _note = $v.note;
       _$v = null;
     }
     return this;
@@ -210,9 +208,7 @@ class ValueWithIntBuilder
 
   @override
   void replace(ValueWithInt other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ValueWithInt;
   }
 
@@ -223,7 +219,12 @@ class ValueWithIntBuilder
 
   @override
   _$ValueWithInt build() {
-    final _$result = _$v ?? new _$ValueWithInt._(anInt: anInt, note: note);
+    final _$result = _$v ??
+        new _$ValueWithInt._(
+            anInt: BuiltValueNullFieldError.checkNotNull(
+                anInt, 'ValueWithInt', 'anInt'),
+            note: BuiltValueNullFieldError.checkNotNull(
+                note, 'ValueWithInt', 'note'));
     replace(_$result);
     return _$result;
   }
@@ -237,9 +238,7 @@ class _$ValueWithHasInt extends ValueWithHasInt {
       (new ValueWithHasIntBuilder()..update(updates)).build();
 
   _$ValueWithHasInt._({this.hasInt}) : super._() {
-    if (hasInt == null) {
-      throw new BuiltValueNullFieldError('ValueWithHasInt', 'hasInt');
-    }
+    BuiltValueNullFieldError.checkNotNull(hasInt, 'ValueWithHasInt', 'hasInt');
   }
 
   @override
@@ -280,8 +279,9 @@ class ValueWithHasIntBuilder
   ValueWithHasIntBuilder();
 
   ValueWithHasIntBuilder get _$this {
-    if (_$v != null) {
-      _hasInt = _$v.hasInt;
+    final $v = _$v;
+    if ($v != null) {
+      _hasInt = $v.hasInt;
       _$v = null;
     }
     return this;
@@ -289,9 +289,7 @@ class ValueWithHasIntBuilder
 
   @override
   void replace(ValueWithHasInt other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ValueWithHasInt;
   }
 
@@ -302,10 +300,13 @@ class ValueWithHasIntBuilder
 
   @override
   _$ValueWithHasInt build() {
-    final _$result = _$v ?? new _$ValueWithHasInt._(hasInt: hasInt);
+    final _$result = _$v ??
+        new _$ValueWithHasInt._(
+            hasInt: BuiltValueNullFieldError.checkNotNull(
+                hasInt, 'ValueWithHasInt', 'hasInt'));
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

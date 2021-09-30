@@ -35,8 +35,9 @@ See the [API docs](https://pub.dev/documentation/built_value/latest/built_value/
 
 ## Tools
 
- - The [Json to Dart built_value class converter](https://charafau.github.io/json2builtvalue/) creates classes for you that correspond to a snippet of JSON
- - [VSCode extension](https://marketplace.visualstudio.com/items?itemName=GiancarloCode.built-value-snippets)
+ - [Json to Dart built_value class converter](https://charafau.github.io/json2builtvalue/)
+ - [Json or js Object to Dart built_value class converter](https://januwa.github.io/p5_object_2_builtvalue/index.html)
+- [VSCode extension](https://marketplace.visualstudio.com/items?itemName=GiancarloCode.built-value-snippets)
  - [IntelliJ plugin](https://plugins.jetbrains.com/plugin/13786-built-value-snippets)
 
 ## Examples
@@ -242,6 +243,45 @@ abstract class Person implements Built<Person, PersonBuilder> {
 ```
 
 ## FAQ
+
+### How do I check a field is valid on instantiation?
+
+The value class private constructor runs when all fields are initialized and
+can do arbitrary checks:
+
+```dart
+abstract class MyValue {
+  MyValue._() {
+    if (field < 0) {
+      throw ArgumentError(field, 'field', 'Must not be negative.');
+    }
+  }
+```
+
+### How do I process a field on instantiation?
+
+Add a hook that runs immediately before a builder is built. For example, you
+could sort a list, so it's always sorted directly before the value is created:
+
+```dart
+abstract class MyValue {
+  @BuiltValueHook(finalizeBuilder: true)
+  static void _sortItems(MyValueBuilder b) =>
+      b..items.sort();
+```
+
+### How do I set a default for a field?
+
+Add a hook that runs whenever a builder is created:
+
+```dart
+abstract class MyValue {
+  @BuiltValueHook(initializeBuilder: true)
+  static void _setDefaults(MyValueBuilder b) =>
+      b
+        ..name = 'defaultName'
+        ..count = 0;
+```
 
 ### Should I check in and/or publish in the generated `.g.dart` files?
 

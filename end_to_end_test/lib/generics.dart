@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library generics;
 
@@ -61,6 +62,17 @@ abstract class GenericContainer
   factory GenericContainer([void Function(GenericContainerBuilder) updates]) =
       _$GenericContainer;
   GenericContainer._();
+}
+
+// Check generation for `strict_raw_types`.
+abstract class DynamicGenericContainer
+    implements Built<DynamicGenericContainer, DynamicGenericContainerBuilder> {
+  Generic<dynamic> get foo;
+
+  factory DynamicGenericContainer(
+          [void Function(DynamicGenericContainerBuilder) updates]) =
+      _$DynamicGenericContainer;
+  DynamicGenericContainer._();
 }
 
 abstract class NestedGenericContainer

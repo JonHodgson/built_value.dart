@@ -1,6 +1,7 @@
 // Copyright (c) 2016, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library built_value_generator.enum_source_library;
 
@@ -8,6 +9,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value_generator/src/analyzer.dart';
 import 'package:built_value_generator/src/enum_source_class.dart';
 import 'package:built_value_generator/src/library_elements.dart';
 import 'package:quiver/iterables.dart';
@@ -25,7 +27,7 @@ abstract class EnumSourceLibrary
 
   @memoized
   ParsedLibraryResult get parsedLibrary =>
-      element.library.session.getParsedLibraryByElement(element.library);
+      parsedLibraryResultOrThrowingMock(element.library);
 
   @memoized
   String get name => element.name;

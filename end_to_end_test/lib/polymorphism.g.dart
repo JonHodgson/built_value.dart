@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of polymorphism;
 
@@ -44,7 +45,7 @@ class _$CatSerializer implements StructuredSerializer<Cat> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'tail':
           result.tail = serializers.deserialize(value,
@@ -89,7 +90,7 @@ class _$FishSerializer implements StructuredSerializer<Fish> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'fins':
           result.fins = serializers.deserialize(value,
@@ -134,7 +135,7 @@ class _$RobotSerializer implements StructuredSerializer<Robot> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'fins':
           result.fins = serializers.deserialize(value,
@@ -182,7 +183,7 @@ class _$CageSerializer implements StructuredSerializer<Cage> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'inhabitant':
           result.inhabitant = serializers.deserialize(value,
@@ -227,7 +228,7 @@ class _$StandardCatSerializer implements StructuredSerializer<StandardCat> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'tail':
           result.tail = serializers.deserialize(value,
@@ -267,7 +268,7 @@ class _$HasStringSerializer implements StructuredSerializer<HasString> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'field':
           result.field = serializers.deserialize(value,
@@ -307,7 +308,7 @@ class _$HasDoubleSerializer implements StructuredSerializer<HasDouble> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'field':
           result.field = serializers.deserialize(value,
@@ -348,7 +349,7 @@ class _$UsesHandCodedSerializer implements StructuredSerializer<UsesHandCoded> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'fieldInBaseBuilder':
           result.fieldInBaseBuilder = serializers.deserialize(value,
@@ -372,7 +373,7 @@ abstract class MammalBuilder implements AnimalBuilder {
   void replace(covariant Mammal other);
   void update(void Function(MammalBuilder) updates);
   int get legs;
-  set legs(int legs);
+  set legs(covariant int legs);
 }
 
 class _$Cat extends Cat {
@@ -385,12 +386,8 @@ class _$Cat extends Cat {
       (new CatBuilder()..update(updates)).build();
 
   _$Cat._({this.tail, this.legs}) : super._() {
-    if (tail == null) {
-      throw new BuiltValueNullFieldError('Cat', 'tail');
-    }
-    if (legs == null) {
-      throw new BuiltValueNullFieldError('Cat', 'legs');
-    }
+    BuiltValueNullFieldError.checkNotNull(tail, 'Cat', 'tail');
+    BuiltValueNullFieldError.checkNotNull(legs, 'Cat', 'legs');
   }
 
   @override
@@ -425,18 +422,19 @@ class CatBuilder implements Builder<Cat, CatBuilder>, MammalBuilder {
 
   bool _tail;
   bool get tail => _$this._tail;
-  set tail(bool tail) => _$this._tail = tail;
+  set tail(covariant bool tail) => _$this._tail = tail;
 
   int _legs;
   int get legs => _$this._legs;
-  set legs(int legs) => _$this._legs = legs;
+  set legs(covariant int legs) => _$this._legs = legs;
 
   CatBuilder();
 
   CatBuilder get _$this {
-    if (_$v != null) {
-      _tail = _$v.tail;
-      _legs = _$v.legs;
+    final $v = _$v;
+    if ($v != null) {
+      _tail = $v.tail;
+      _legs = $v.legs;
       _$v = null;
     }
     return this;
@@ -444,9 +442,7 @@ class CatBuilder implements Builder<Cat, CatBuilder>, MammalBuilder {
 
   @override
   void replace(covariant Cat other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Cat;
   }
 
@@ -457,7 +453,10 @@ class CatBuilder implements Builder<Cat, CatBuilder>, MammalBuilder {
 
   @override
   _$Cat build() {
-    final _$result = _$v ?? new _$Cat._(tail: tail, legs: legs);
+    final _$result = _$v ??
+        new _$Cat._(
+            tail: BuiltValueNullFieldError.checkNotNull(tail, 'Cat', 'tail'),
+            legs: BuiltValueNullFieldError.checkNotNull(legs, 'Cat', 'legs'));
     replace(_$result);
     return _$result;
   }
@@ -473,12 +472,8 @@ class _$Fish extends Fish {
       (new FishBuilder()..update(updates)).build();
 
   _$Fish._({this.fins, this.legs}) : super._() {
-    if (fins == null) {
-      throw new BuiltValueNullFieldError('Fish', 'fins');
-    }
-    if (legs == null) {
-      throw new BuiltValueNullFieldError('Fish', 'legs');
-    }
+    BuiltValueNullFieldError.checkNotNull(fins, 'Fish', 'fins');
+    BuiltValueNullFieldError.checkNotNull(legs, 'Fish', 'legs');
   }
 
   @override
@@ -513,18 +508,19 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   int _fins;
   int get fins => _$this._fins;
-  set fins(int fins) => _$this._fins = fins;
+  set fins(covariant int fins) => _$this._fins = fins;
 
   int _legs;
   int get legs => _$this._legs;
-  set legs(int legs) => _$this._legs = legs;
+  set legs(covariant int legs) => _$this._legs = legs;
 
   FishBuilder();
 
   FishBuilder get _$this {
-    if (_$v != null) {
-      _fins = _$v.fins;
-      _legs = _$v.legs;
+    final $v = _$v;
+    if ($v != null) {
+      _fins = $v.fins;
+      _legs = $v.legs;
       _$v = null;
     }
     return this;
@@ -532,9 +528,7 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   @override
   void replace(covariant Fish other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Fish;
   }
 
@@ -545,7 +539,10 @@ class FishBuilder implements Builder<Fish, FishBuilder>, AnimalBuilder {
 
   @override
   _$Fish build() {
-    final _$result = _$v ?? new _$Fish._(fins: fins, legs: legs);
+    final _$result = _$v ??
+        new _$Fish._(
+            fins: BuiltValueNullFieldError.checkNotNull(fins, 'Fish', 'fins'),
+            legs: BuiltValueNullFieldError.checkNotNull(legs, 'Fish', 'legs'));
     replace(_$result);
     return _$result;
   }
@@ -561,12 +558,8 @@ class _$Robot extends Robot {
       (new RobotBuilder()..update(updates)).build();
 
   _$Robot._({this.fins, this.legs}) : super._() {
-    if (fins == null) {
-      throw new BuiltValueNullFieldError('Robot', 'fins');
-    }
-    if (legs == null) {
-      throw new BuiltValueNullFieldError('Robot', 'legs');
-    }
+    BuiltValueNullFieldError.checkNotNull(fins, 'Robot', 'fins');
+    BuiltValueNullFieldError.checkNotNull(legs, 'Robot', 'legs');
   }
 
   @override
@@ -610,9 +603,10 @@ class RobotBuilder implements Builder<Robot, RobotBuilder> {
   RobotBuilder();
 
   RobotBuilder get _$this {
-    if (_$v != null) {
-      _fins = _$v.fins;
-      _legs = _$v.legs;
+    final $v = _$v;
+    if ($v != null) {
+      _fins = $v.fins;
+      _legs = $v.legs;
       _$v = null;
     }
     return this;
@@ -620,9 +614,7 @@ class RobotBuilder implements Builder<Robot, RobotBuilder> {
 
   @override
   void replace(Robot other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Robot;
   }
 
@@ -633,7 +625,10 @@ class RobotBuilder implements Builder<Robot, RobotBuilder> {
 
   @override
   _$Robot build() {
-    final _$result = _$v ?? new _$Robot._(fins: fins, legs: legs);
+    final _$result = _$v ??
+        new _$Robot._(
+            fins: BuiltValueNullFieldError.checkNotNull(fins, 'Robot', 'fins'),
+            legs: BuiltValueNullFieldError.checkNotNull(legs, 'Robot', 'legs'));
     replace(_$result);
     return _$result;
   }
@@ -649,12 +644,9 @@ class _$Cage extends Cage {
       (new CageBuilder()..update(updates)).build();
 
   _$Cage._({this.inhabitant, this.otherInhabitants}) : super._() {
-    if (inhabitant == null) {
-      throw new BuiltValueNullFieldError('Cage', 'inhabitant');
-    }
-    if (otherInhabitants == null) {
-      throw new BuiltValueNullFieldError('Cage', 'otherInhabitants');
-    }
+    BuiltValueNullFieldError.checkNotNull(inhabitant, 'Cage', 'inhabitant');
+    BuiltValueNullFieldError.checkNotNull(
+        otherInhabitants, 'Cage', 'otherInhabitants');
   }
 
   @override
@@ -702,9 +694,10 @@ class CageBuilder implements Builder<Cage, CageBuilder> {
   CageBuilder();
 
   CageBuilder get _$this {
-    if (_$v != null) {
-      _inhabitant = _$v.inhabitant;
-      _otherInhabitants = _$v.otherInhabitants?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _inhabitant = $v.inhabitant;
+      _otherInhabitants = $v.otherInhabitants.toBuilder();
       _$v = null;
     }
     return this;
@@ -712,9 +705,7 @@ class CageBuilder implements Builder<Cage, CageBuilder> {
 
   @override
   void replace(Cage other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Cage;
   }
 
@@ -729,7 +720,8 @@ class CageBuilder implements Builder<Cage, CageBuilder> {
     try {
       _$result = _$v ??
           new _$Cage._(
-              inhabitant: inhabitant,
+              inhabitant: BuiltValueNullFieldError.checkNotNull(
+                  inhabitant, 'Cage', 'inhabitant'),
               otherInhabitants: otherInhabitants.build());
     } catch (_) {
       String _$failedField;
@@ -755,9 +747,7 @@ class _$StandardCat extends StandardCat {
       (new StandardCatBuilder()..update(updates)).build();
 
   _$StandardCat._({this.tail}) : super._() {
-    if (tail == null) {
-      throw new BuiltValueNullFieldError('StandardCat', 'tail');
-    }
+    BuiltValueNullFieldError.checkNotNull(tail, 'StandardCat', 'tail');
   }
 
   @override
@@ -795,8 +785,9 @@ class StandardCatBuilder implements Builder<StandardCat, StandardCatBuilder> {
   StandardCatBuilder();
 
   StandardCatBuilder get _$this {
-    if (_$v != null) {
-      _tail = _$v.tail;
+    final $v = _$v;
+    if ($v != null) {
+      _tail = $v.tail;
       _$v = null;
     }
     return this;
@@ -804,9 +795,7 @@ class StandardCatBuilder implements Builder<StandardCat, StandardCatBuilder> {
 
   @override
   void replace(StandardCat other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$StandardCat;
   }
 
@@ -817,7 +806,10 @@ class StandardCatBuilder implements Builder<StandardCat, StandardCatBuilder> {
 
   @override
   _$StandardCat build() {
-    final _$result = _$v ?? new _$StandardCat._(tail: tail);
+    final _$result = _$v ??
+        new _$StandardCat._(
+            tail: BuiltValueNullFieldError.checkNotNull(
+                tail, 'StandardCat', 'tail'));
     replace(_$result);
     return _$result;
   }
@@ -838,9 +830,7 @@ class _$HasString extends HasString {
       (new HasStringBuilder()..update(updates)).build();
 
   _$HasString._({this.field}) : super._() {
-    if (field == null) {
-      throw new BuiltValueNullFieldError('HasString', 'field');
-    }
+    BuiltValueNullFieldError.checkNotNull(field, 'HasString', 'field');
   }
 
   @override
@@ -874,13 +864,14 @@ class HasStringBuilder
 
   String _field;
   String get field => _$this._field;
-  set field(String field) => _$this._field = field;
+  set field(covariant String field) => _$this._field = field;
 
   HasStringBuilder();
 
   HasStringBuilder get _$this {
-    if (_$v != null) {
-      _field = _$v.field;
+    final $v = _$v;
+    if ($v != null) {
+      _field = $v.field;
       _$v = null;
     }
     return this;
@@ -888,9 +879,7 @@ class HasStringBuilder
 
   @override
   void replace(covariant HasString other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$HasString;
   }
 
@@ -901,7 +890,10 @@ class HasStringBuilder
 
   @override
   _$HasString build() {
-    final _$result = _$v ?? new _$HasString._(field: field);
+    final _$result = _$v ??
+        new _$HasString._(
+            field: BuiltValueNullFieldError.checkNotNull(
+                field, 'HasString', 'field'));
     replace(_$result);
     return _$result;
   }
@@ -915,9 +907,7 @@ class _$HasDouble extends HasDouble {
       (new HasDoubleBuilder()..update(updates)).build();
 
   _$HasDouble._({this.field}) : super._() {
-    if (field == null) {
-      throw new BuiltValueNullFieldError('HasDouble', 'field');
-    }
+    BuiltValueNullFieldError.checkNotNull(field, 'HasDouble', 'field');
   }
 
   @override
@@ -951,13 +941,14 @@ class HasDoubleBuilder
 
   double _field;
   double get field => _$this._field;
-  set field(double field) => _$this._field = field;
+  set field(covariant double field) => _$this._field = field;
 
   HasDoubleBuilder();
 
   HasDoubleBuilder get _$this {
-    if (_$v != null) {
-      _field = _$v.field;
+    final $v = _$v;
+    if ($v != null) {
+      _field = $v.field;
       _$v = null;
     }
     return this;
@@ -965,9 +956,7 @@ class HasDoubleBuilder
 
   @override
   void replace(covariant HasDouble other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$HasDouble;
   }
 
@@ -978,7 +967,10 @@ class HasDoubleBuilder
 
   @override
   _$HasDouble build() {
-    final _$result = _$v ?? new _$HasDouble._(field: field);
+    final _$result = _$v ??
+        new _$HasDouble._(
+            field: BuiltValueNullFieldError.checkNotNull(
+                field, 'HasDouble', 'field'));
     replace(_$result);
     return _$result;
   }
@@ -995,12 +987,8 @@ class _$UsesChainedInterface extends UsesChainedInterface {
       (new UsesChainedInterfaceBuilder()..update(updates)).build();
 
   _$UsesChainedInterface._({this.bar, this.foo}) : super._() {
-    if (bar == null) {
-      throw new BuiltValueNullFieldError('UsesChainedInterface', 'bar');
-    }
-    if (foo == null) {
-      throw new BuiltValueNullFieldError('UsesChainedInterface', 'foo');
-    }
+    BuiltValueNullFieldError.checkNotNull(bar, 'UsesChainedInterface', 'bar');
+    BuiltValueNullFieldError.checkNotNull(foo, 'UsesChainedInterface', 'foo');
   }
 
   @override
@@ -1049,9 +1037,10 @@ class UsesChainedInterfaceBuilder
   UsesChainedInterfaceBuilder();
 
   UsesChainedInterfaceBuilder get _$this {
-    if (_$v != null) {
-      _bar = _$v.bar;
-      _foo = _$v.foo;
+    final $v = _$v;
+    if ($v != null) {
+      _bar = $v.bar;
+      _foo = $v.foo;
       _$v = null;
     }
     return this;
@@ -1059,9 +1048,7 @@ class UsesChainedInterfaceBuilder
 
   @override
   void replace(UsesChainedInterface other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UsesChainedInterface;
   }
 
@@ -1072,7 +1059,12 @@ class UsesChainedInterfaceBuilder
 
   @override
   _$UsesChainedInterface build() {
-    final _$result = _$v ?? new _$UsesChainedInterface._(bar: bar, foo: foo);
+    final _$result = _$v ??
+        new _$UsesChainedInterface._(
+            bar: BuiltValueNullFieldError.checkNotNull(
+                bar, 'UsesChainedInterface', 'bar'),
+            foo: BuiltValueNullFieldError.checkNotNull(
+                foo, 'UsesChainedInterface', 'foo'));
     replace(_$result);
     return _$result;
   }
@@ -1086,9 +1078,8 @@ class _$UsesHandCoded extends UsesHandCoded {
       (new UsesHandCodedBuilder()..update(updates)).build();
 
   _$UsesHandCoded._({this.fieldInBaseBuilder}) : super._() {
-    if (fieldInBaseBuilder == null) {
-      throw new BuiltValueNullFieldError('UsesHandCoded', 'fieldInBaseBuilder');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        fieldInBaseBuilder, 'UsesHandCoded', 'fieldInBaseBuilder');
   }
 
   @override
@@ -1124,14 +1115,15 @@ class UsesHandCodedBuilder
 
   int _fieldInBaseBuilder;
   int get fieldInBaseBuilder => _$this._fieldInBaseBuilder;
-  set fieldInBaseBuilder(int fieldInBaseBuilder) =>
+  set fieldInBaseBuilder(covariant int fieldInBaseBuilder) =>
       _$this._fieldInBaseBuilder = fieldInBaseBuilder;
 
   UsesHandCodedBuilder();
 
   UsesHandCodedBuilder get _$this {
-    if (_$v != null) {
-      _fieldInBaseBuilder = _$v.fieldInBaseBuilder;
+    final $v = _$v;
+    if ($v != null) {
+      _fieldInBaseBuilder = $v.fieldInBaseBuilder;
       _$v = null;
     }
     return this;
@@ -1139,9 +1131,7 @@ class UsesHandCodedBuilder
 
   @override
   void replace(covariant UsesHandCoded other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UsesHandCoded;
   }
 
@@ -1152,8 +1142,10 @@ class UsesHandCodedBuilder
 
   @override
   _$UsesHandCoded build() {
-    final _$result =
-        _$v ?? new _$UsesHandCoded._(fieldInBaseBuilder: fieldInBaseBuilder);
+    final _$result = _$v ??
+        new _$UsesHandCoded._(
+            fieldInBaseBuilder: BuiltValueNullFieldError.checkNotNull(
+                fieldInBaseBuilder, 'UsesHandCoded', 'fieldInBaseBuilder'));
     replace(_$result);
     return _$result;
   }
@@ -1211,9 +1203,7 @@ class ImplementsTwoBuilder
   @override
 // ignore: override_on_non_overriding_method
   void replace(covariant ImplementsTwo other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ImplementsTwo;
   }
 
@@ -1230,4 +1220,115 @@ class ImplementsTwoBuilder
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+abstract class ArgumentBuilder<T> {
+  void replace(Argument<T> other);
+  void update(void Function(ArgumentBuilder<T>) updates);
+  IntentSlot<T, Object> get slot;
+  set slot(IntentSlot<T, Object> slot);
+}
+
+abstract class GroundedArgumentBuilder<T, G extends Object>
+    implements ArgumentBuilder<T> {
+  void replace(covariant GroundedArgument<T, G> other);
+  void update(void Function(GroundedArgumentBuilder<T, G>) updates);
+  IntentSlot<T, G> get slot;
+  set slot(covariant IntentSlot<T, G> slot);
+}
+
+class _$InstantiableGroundedArgument<T, G extends Object>
+    extends InstantiableGroundedArgument<T, G> {
+  @override
+  final IntentSlot<T, G> slot;
+
+  factory _$InstantiableGroundedArgument(
+          [void Function(InstantiableGroundedArgumentBuilder<T, G>) updates]) =>
+      (new InstantiableGroundedArgumentBuilder<T, G>()..update(updates))
+          .build();
+
+  _$InstantiableGroundedArgument._({this.slot}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        slot, 'InstantiableGroundedArgument', 'slot');
+    if (T == dynamic) {
+      throw new BuiltValueMissingGenericsError(
+          'InstantiableGroundedArgument', 'T');
+    }
+    if (G == dynamic) {
+      throw new BuiltValueMissingGenericsError(
+          'InstantiableGroundedArgument', 'G');
+    }
+  }
+
+  @override
+  InstantiableGroundedArgument<T, G> rebuild(
+          void Function(InstantiableGroundedArgumentBuilder<T, G>) updates) =>
+      (toBuilder()..update(updates)).build();
+
+  @override
+  InstantiableGroundedArgumentBuilder<T, G> toBuilder() =>
+      new InstantiableGroundedArgumentBuilder<T, G>()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is InstantiableGroundedArgument && slot == other.slot;
+  }
+
+  @override
+  int get hashCode {
+    return $jf($jc(0, slot.hashCode));
+  }
+
+  @override
+  String toString() {
+    return (newBuiltValueToStringHelper('InstantiableGroundedArgument')
+          ..add('slot', slot))
+        .toString();
+  }
+}
+
+class InstantiableGroundedArgumentBuilder<T, G extends Object>
+    implements
+        Builder<InstantiableGroundedArgument<T, G>,
+            InstantiableGroundedArgumentBuilder<T, G>>,
+        ArgumentBuilder<T> {
+  _$InstantiableGroundedArgument<T, G> _$v;
+
+  IntentSlot<T, G> _slot;
+  IntentSlot<T, G> get slot => _$this._slot;
+  set slot(covariant IntentSlot<T, G> slot) => _$this._slot = slot;
+
+  InstantiableGroundedArgumentBuilder();
+
+  InstantiableGroundedArgumentBuilder<T, G> get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _slot = $v.slot;
+      _$v = null;
+    }
+    return this;
+  }
+
+  @override
+  void replace(covariant InstantiableGroundedArgument<T, G> other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$InstantiableGroundedArgument<T, G>;
+  }
+
+  @override
+  void update(
+      void Function(InstantiableGroundedArgumentBuilder<T, G>) updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  _$InstantiableGroundedArgument<T, G> build() {
+    final _$result = _$v ??
+        new _$InstantiableGroundedArgument<T, G>._(
+            slot: BuiltValueNullFieldError.checkNotNull(
+                slot, 'InstantiableGroundedArgument', 'slot'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

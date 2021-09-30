@@ -1,6 +1,7 @@
 // Copyright (c) 2016, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library built_value_generator.enum_source_class;
 
@@ -8,6 +9,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value_generator/src/analyzer.dart';
 import 'package:built_value_generator/src/dart_types.dart';
 import 'package:built_value_generator/src/enum_source_field.dart';
 import 'package:built_value_generator/src/strings.dart';
@@ -26,7 +28,7 @@ abstract class EnumSourceClass
 
   @memoized
   ParsedLibraryResult get parsedLibrary =>
-      element.library.session.getParsedLibraryByElement(element.library);
+      parsedLibraryResultOrThrowingMock(element.library);
 
   @memoized
   String get name => element.name;
@@ -142,7 +144,8 @@ abstract class EnumSourceClass
 
   Iterable<String> _checkConstructor() {
     var expectedCode = 'const $name._(String name) : super(name);';
-    return constructors.length == 1 && constructors.single == expectedCode
+    return constructors.length == 1 &&
+            constructors.single.contains(expectedCode)
         ? <String>[]
         : <String>['Have exactly one constructor: $expectedCode'];
   }

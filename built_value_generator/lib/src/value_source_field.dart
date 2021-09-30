@@ -1,12 +1,14 @@
 // Copyright (c) 2016, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library built_value_generator.source_field;
 
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
@@ -19,11 +21,11 @@ import 'package:built_value_generator/src/metadata.dart'
 part 'value_source_field.g.dart';
 
 const _suggestedTypes = <String, String>{
-  'List': 'BuiltList',
-  'Map': 'BuiltMap',
-  'Set': 'BuiltSet',
-  'ListMultimap': 'BuiltListMultimap',
-  'SetMultimap': 'BuiltSetMultimap',
+  'List<dynamic>': 'BuiltList',
+  'Map<dynamic, dynamic>': 'BuiltMap',
+  'Set<dynamic>': 'BuiltSet',
+  'ListMultimap<dynamic, dynamic>': 'BuiltListMultimap',
+  'SetMultimap<dynamic, dynamic>': 'BuiltSetMultimap',
 };
 
 abstract class ValueSourceField
@@ -50,12 +52,18 @@ abstract class ValueSourceField
   String get name => element.displayName;
 
   @memoized
+  bool get isNonNullByDefault => element.library.isNonNullableByDefault;
+
+  @memoized
+  String get orNull => isNonNullByDefault ? '?' : '';
+
+  @memoized
   String get type => DartTypes.getName(element.getter.returnType);
 
   @memoized
   bool get isFunctionType => type.contains('(');
 
-  /// The [type] plus any import prefix.
+  /// The [type] plus any import prefix, without any nullability suffix.
   @memoized
   String get typeWithPrefix {
     var typeFromAst = (parsedLibrary.getElementDeclaration(element.getter).node
@@ -63,6 +71,9 @@ abstract class ValueSourceField
             ?.returnType
             ?.toSource() ??
         'dynamic';
+    if (typeFromAst.endsWith('?')) {
+      typeFromAst = typeFromAst.substring(0, typeFromAst.length - 1);
+    }
     var typeFromElement = type;
 
     // If the type is a function, we can't use the element result; it is
@@ -88,8 +99,16 @@ abstract class ValueSourceField
   bool get isGetter => element.getter != null && !element.getter.isSynthetic;
 
   @memoized
-  bool get isNullable => element.getter.metadata
+  bool get hasNullableAnnotation => element.getter.metadata
       .any((metadata) => metadataToStringValue(metadata) == 'nullable');
+
+  @memoized
+  bool get hasNullableType =>
+      element?.getter?.returnType?.nullabilitySuffix ==
+      NullabilitySuffix.question;
+
+  @memoized
+  bool get isNullable => hasNullableAnnotation || hasNullableType;
 
   @memoized
   BuiltValueField get builtValueField {
@@ -102,7 +121,10 @@ abstract class ValueSourceField
         compare: annotation.getField('compare').toBoolValue(),
         serialize: annotation.getField('serialize').toBoolValue(),
         wireName: annotation.getField('wireName').toStringValue(),
-        defaultValue: annotation.getField('defaultValue').toStringValue());
+        defaultValue: annotation.getField('defaultValue')?.toStringValue(),
+        nestedBuilder: annotation.getField('nestedBuilder').toBoolValue(),
+        autoCreateNestedBuilder:
+            annotation.getField('autoCreateNestedBuilder').toBoolValue());
   }
 
   @memoized
@@ -140,8 +162,19 @@ abstract class ValueSourceField
     if (result.contains('.')) {
       result = result.substring(result.indexOf('.') + 1);
     }
-    return result;
+    return _removeNullabilitySuffix(result);
   }
+
+  bool get builderElementTypeIsNullable =>
+      parsedLibrary
+          .getElementDeclaration(builderElement)
+          ?.node
+          ?.parent
+          ?.childEntities
+          ?.first
+          .toString()
+          ?.endsWith('?') ??
+      false;
 
   /// The [builderElementType] plus any import prefix.
   @memoized
@@ -150,19 +183,25 @@ abstract class ValueSourceField
     // to have parent node [VariableDeclarationList] giving the type.
     var fieldDeclaration = parsedLibrary.getElementDeclaration(builderElement);
     if (fieldDeclaration != null) {
-      return (((fieldDeclaration.node as VariableDeclaration).parent)
-                  as VariableDeclarationList)
-              ?.type
-              ?.toSource() ??
-          'dynamic';
+      return _removeNullabilitySuffix(
+          (((fieldDeclaration.node as VariableDeclaration).parent)
+                      as VariableDeclarationList)
+                  ?.type
+                  ?.toSource() ??
+              'dynamic');
     } else {
       // Otherwise it's an explicit getter/setter pair; get the type from the getter.
-      return (parsedLibrary.getElementDeclaration(builderElement.getter).node
-                  as MethodDeclaration)
+      return _removeNullabilitySuffix((parsedLibrary
+                  .getElementDeclaration(builderElement.getter)
+                  .node as MethodDeclaration)
               ?.returnType
               ?.toSource() ??
-          'dynamic';
+          'dynamic');
     }
+  }
+
+  String _removeNullabilitySuffix(String type) {
+    return type.endsWith('?') ? type.substring(0, type.length - 1) : type;
   }
 
   /// Gets the type name for the builder. Specify the compilation unit to
@@ -178,8 +217,16 @@ abstract class ValueSourceField
   @memoized
   bool get isNestedBuilder => builderFieldExists
       ? typeInBuilder(null).contains('Builder') ?? false
-      : settings.nestedBuilders &&
+      : (builtValueField.nestedBuilder ?? settings.nestedBuilders) &&
           DartTypes.needsNestedBuilder(element.getter.returnType);
+
+  @memoized
+  bool get isAutoCreateNestedBuilder =>
+      builtValueField.autoCreateNestedBuilder ??
+      settings.autoCreateNestedBuilders;
+
+  @memoized
+  bool get hasDefaultValue => builtValueField.defaultValue != null;
 
   static BuiltList<ValueSourceField> fromClassElements(
       BuiltValue settings,
@@ -237,18 +284,27 @@ abstract class ValueSourceField
           b..message = 'Make field $name public; remove the underscore.'));
     }
 
+    // TODO(davidmorgan): tighten this up to apply to any generics.
     if (_suggestedTypes.keys.contains(type)) {
       result.add(GeneratorError((b) => b
         ..message = 'Make field "$name" have type "${_suggestedTypes[type]}". '
             'The current type, "$type", is not allowed because it is mutable.'));
     }
 
+    if (isNonNullByDefault && hasNullableAnnotation) {
+      result.add(GeneratorError((b) => b
+        ..message = 'Remove "@nullable" from field "$name". '
+            'In null safe code, add "?" to the field type instead.'));
+    }
+
     if (builderFieldExists) {
-      if (buildElementType != type &&
-          buildElementType != _toBuilderType(element.type, type)) {
+      var builderElementTypeOrNull = buildElementType;
+      if (builderElementTypeIsNullable) builderElementTypeOrNull += orNull;
+      if (builderElementTypeOrNull != type + orNull &&
+          builderElementTypeOrNull != _toBuilderType(element.type, type)) {
         result.add(GeneratorError((b) => b
           ..message = 'Make builder field $name have type: '
-              '$type (or, if applicable, builder)'));
+              '$type$orNull (or, if applicable, builder)'));
       }
     }
 
@@ -259,6 +315,12 @@ abstract class ValueSourceField
         ..message =
             'Make builder field $name a normal field or a getter/setter '
                 'pair.'));
+    }
+
+    if (settings.comparableBuilders && builtValueField.nestedBuilder == true) {
+      result.add(GeneratorError((b) => b
+        ..message = 'Make builder field $name have `nestedBuilder: false`'
+            ' in order to use `comparableBuilders: true`.'));
     }
 
     return result;

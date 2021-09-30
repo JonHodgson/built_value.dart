@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// @dart=2.11
 
 part of standard_json;
 
@@ -37,10 +38,12 @@ class _$StandardJsonValueSerializer
           specifiedType:
               const FullType(BuiltSet, const [const FullType(Animal)])),
     ];
-    if (object.strings != null) {
+    Object value;
+    value = object.strings;
+    if (value != null) {
       result
         ..add('strings')
-        ..add(serializers.serialize(object.strings,
+        ..add(serializers.serialize(value,
             specifiedType:
                 const FullType(BuiltList, const [const FullType(String)])));
     }
@@ -57,7 +60,7 @@ class _$StandardJsonValueSerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object value = iterator.current;
       switch (key) {
         case 'number':
           result.number = serializers.deserialize(value,
@@ -123,21 +126,14 @@ class _$StandardJsonValue extends StandardJsonValue {
       this.uniqueZoo,
       this.strings})
       : super._() {
-    if (number == null) {
-      throw new BuiltValueNullFieldError('StandardJsonValue', 'number');
-    }
-    if (text == null) {
-      throw new BuiltValueNullFieldError('StandardJsonValue', 'text');
-    }
-    if (keyValues == null) {
-      throw new BuiltValueNullFieldError('StandardJsonValue', 'keyValues');
-    }
-    if (zoo == null) {
-      throw new BuiltValueNullFieldError('StandardJsonValue', 'zoo');
-    }
-    if (uniqueZoo == null) {
-      throw new BuiltValueNullFieldError('StandardJsonValue', 'uniqueZoo');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        number, 'StandardJsonValue', 'number');
+    BuiltValueNullFieldError.checkNotNull(text, 'StandardJsonValue', 'text');
+    BuiltValueNullFieldError.checkNotNull(
+        keyValues, 'StandardJsonValue', 'keyValues');
+    BuiltValueNullFieldError.checkNotNull(zoo, 'StandardJsonValue', 'zoo');
+    BuiltValueNullFieldError.checkNotNull(
+        uniqueZoo, 'StandardJsonValue', 'uniqueZoo');
   }
 
   @override
@@ -220,13 +216,14 @@ class StandardJsonValueBuilder
   StandardJsonValueBuilder();
 
   StandardJsonValueBuilder get _$this {
-    if (_$v != null) {
-      _number = _$v.number;
-      _text = _$v.text;
-      _keyValues = _$v.keyValues?.toBuilder();
-      _zoo = _$v.zoo?.toBuilder();
-      _uniqueZoo = _$v.uniqueZoo?.toBuilder();
-      _strings = _$v.strings?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _number = $v.number;
+      _text = $v.text;
+      _keyValues = $v.keyValues.toBuilder();
+      _zoo = $v.zoo.toBuilder();
+      _uniqueZoo = $v.uniqueZoo.toBuilder();
+      _strings = $v.strings?.toBuilder();
       _$v = null;
     }
     return this;
@@ -234,9 +231,7 @@ class StandardJsonValueBuilder
 
   @override
   void replace(StandardJsonValue other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$StandardJsonValue;
   }
 
@@ -251,8 +246,10 @@ class StandardJsonValueBuilder
     try {
       _$result = _$v ??
           new _$StandardJsonValue._(
-              number: number,
-              text: text,
+              number: BuiltValueNullFieldError.checkNotNull(
+                  number, 'StandardJsonValue', 'number'),
+              text: BuiltValueNullFieldError.checkNotNull(
+                  text, 'StandardJsonValue', 'text'),
               keyValues: keyValues.build(),
               zoo: zoo.build(),
               uniqueZoo: uniqueZoo.build(),
@@ -279,4 +276,4 @@ class StandardJsonValueBuilder
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new

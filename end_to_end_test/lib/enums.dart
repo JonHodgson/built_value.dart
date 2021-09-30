@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library enums;
 
@@ -82,6 +83,9 @@ class DollarValueEnum extends EnumClass {
 
   static const DollarValueEnum value$ = _$value$;
 
+  @BuiltValueEnumConst(wireName: r'value2$')
+  static const DollarValueEnum value2 = _$value2;
+
   const DollarValueEnum._(String name) : super(name);
 
   static BuiltSet<DollarValueEnum> get values => _$dollarValues;
@@ -100,4 +104,20 @@ class FallbackEnum extends EnumClass {
 
   static BuiltSet<FallbackEnum> get values => _$fbValues;
   static FallbackEnum valueOf(String name) => _$fbValueOf(name);
+}
+
+@Deprecated('Testing whether annotations on constructors works.')
+class DeprecatedEnum extends EnumClass {
+  @Deprecated('Testing whether annotations on fields works.')
+  static const DeprecatedEnum yes = _$dYes;
+  @Deprecated('Testing whether annotations on fields works.')
+  static const DeprecatedEnum no = _$dNo;
+
+  @Deprecated('Testing whether annotations on constructors works.')
+  const DeprecatedEnum._(String name) : super(name);
+
+  @Deprecated('Testing whether annotations on methods works.')
+  static BuiltSet<DeprecatedEnum> get values => _$dValues;
+  @Deprecated('Testing whether annotations on methods works.')
+  static DeprecatedEnum valueOf(String name) => _$dValueOf(name);
 }

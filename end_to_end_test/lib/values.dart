@@ -1,6 +1,7 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
 
 library values;
 
@@ -89,6 +90,111 @@ abstract class CompoundValueComparableBuilders
           [void Function(CompoundValueComparableBuildersBuilder) updates]) =
       _$CompoundValueComparableBuilders;
   CompoundValueComparableBuilders._();
+}
+
+// Class using nesting by default.
+abstract class CompoundValueNoNestingField
+    implements
+        Built<CompoundValueNoNestingField, CompoundValueNoNestingFieldBuilder> {
+  static Serializer<CompoundValueNoNestingField> get serializer =>
+      _$compoundValueNoNestingFieldSerializer;
+
+  // One field not using nesting.
+  @BuiltValueField(nestedBuilder: false)
+  SimpleValue get simpleValue;
+
+  // One nullable field not using nesting.
+  @nullable
+  @BuiltValueField(nestedBuilder: false)
+  ValidatedValue get validatedValue;
+
+  // One field using nesting.
+  SimpleValue get simpleValueWithNested;
+
+  // One nullable field using nesting.
+  @nullable
+  ValidatedValue get validatedValueWithNested;
+
+  factory CompoundValueNoNestingField(
+          [void Function(CompoundValueNoNestingFieldBuilder) updates]) =
+      _$CompoundValueNoNestingField;
+
+  CompoundValueNoNestingField._();
+}
+
+// Class not using nesting by default.
+@BuiltValue(nestedBuilders: false)
+abstract class CompoundValueNestingField
+    implements
+        Built<CompoundValueNestingField, CompoundValueNestingFieldBuilder> {
+  static Serializer<CompoundValueNestingField> get serializer =>
+      _$compoundValueNestingFieldSerializer;
+
+  // One field not using nesting.
+  SimpleValue get simpleValue;
+
+  // One nullable field not using nesting.
+  @nullable
+  ValidatedValue get validatedValue;
+
+  // One field using nesting.
+  @BuiltValueField(nestedBuilder: true)
+  SimpleValue get simpleValueWithNested;
+
+  // One nullable field using nesting.
+  @nullable
+  @BuiltValueField(nestedBuilder: true)
+  ValidatedValue get validatedValueWithNested;
+
+  factory CompoundValueNestingField(
+          [void Function(CompoundValueNestingFieldBuilder) updates]) =
+      _$CompoundValueNestingField;
+
+  CompoundValueNestingField._();
+}
+
+// Class using auto create builder nesting by default.
+abstract class CompoundValueNoAutoNestingField
+    implements
+        Built<CompoundValueNoAutoNestingField,
+            CompoundValueNoAutoNestingFieldBuilder> {
+  static Serializer<CompoundValueNoAutoNestingField> get serializer =>
+      _$compoundValueNoAutoNestingFieldSerializer;
+
+  // One field not using auto create builder nesting.
+  @BuiltValueField(autoCreateNestedBuilder: false)
+  NoFieldsValue get value;
+
+  // One field using auto create builder nesting.
+  NoFieldsValue get valueWithAutoCreate;
+
+  factory CompoundValueNoAutoNestingField(
+          [void Function(CompoundValueNoAutoNestingFieldBuilder) updates]) =
+      _$CompoundValueNoAutoNestingField;
+
+  CompoundValueNoAutoNestingField._();
+}
+
+// Class not using auto create builder nesting by default.
+abstract class CompoundValueAutoNestingField
+    implements
+        Built<CompoundValueAutoNestingField,
+            CompoundValueAutoNestingFieldBuilder> {
+  static Serializer<CompoundValueAutoNestingField> get serializer =>
+      _$compoundValueAutoNestingFieldSerializer;
+
+  // One field not using auto create builder nesting.
+  NoFieldsValue get value;
+
+  // One field using auto create builder nesting.
+  @BuiltValueField(autoCreateNestedBuilder: true)
+  NoFieldsValue get valueWithAutoCreate;
+
+  factory CompoundValueAutoNestingField(
+          [void Function(CompoundValueAutoNestingFieldBuilder) updates]) =
+      _$CompoundValueAutoNestingField;
+
+  CompoundValueAutoNestingField._();
 }
 
 abstract class CompoundValueExplicitNoNesting
@@ -502,21 +608,6 @@ abstract class ValueWithOnSet
   ValueWithOnSet._();
 }
 
-abstract class SerializesNullsValue
-    implements Built<SerializesNullsValue, SerializesNullsValueBuilder> {
-  @BuiltValueSerializer(serializeNulls: true)
-  static Serializer<SerializesNullsValue> get serializer =>
-      _$serializesNullsValueSerializer;
-
-  @nullable
-  String get value;
-
-  factory SerializesNullsValue(
-          [void Function(SerializesNullsValueBuilder) updates]) =
-      _$SerializesNullsValue;
-  SerializesNullsValue._();
-}
-
 // Check that `toString` from a mixin is not redefined.
 abstract class CustomToStringValue extends Object
     with CustomToString
@@ -664,6 +755,25 @@ abstract class MemoizedHashcodeValue
 abstract class _PrivateValue
     implements Built<_PrivateValue, _PrivateValueBuilder> {
   _PrivateValue._();
-  factory _PrivateValue([void Function(_PrivateValueBuilder) updates]) =
+  factory _PrivateValue(void Function(_PrivateValueBuilder) updates) =
       _$PrivateValue;
+}
+
+@Deprecated('Testing whether annotations on constructors works.')
+abstract class DeprecatedValue
+    implements Built<DeprecatedValue, DeprecatedValueBuilder> {
+  @Deprecated('Testing whether annotations on constructors works.')
+  factory DeprecatedValue([void Function(DeprecatedValueBuilder) updates]) =
+      _$DeprecatedValue;
+  @Deprecated('Testing whether annotations on constructors works.')
+  DeprecatedValue._();
+}
+
+@Deprecated('Testing whether annotations on constructors works.')
+abstract class DeprecatedValueBuilder
+    implements Builder<DeprecatedValue, DeprecatedValueBuilder> {
+  @Deprecated('Testing whether annotations on constructors works.')
+  factory DeprecatedValueBuilder() = _$DeprecatedValueBuilder;
+  @Deprecated('Testing whether annotations on constructors works.')
+  DeprecatedValueBuilder._();
 }

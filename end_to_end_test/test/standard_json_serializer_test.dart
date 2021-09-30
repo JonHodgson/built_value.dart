@@ -1,6 +1,9 @@
 // Copyright (c) 2017, Google Inc. Please see the AUTHORS file for details.
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// @dart=2.11
+
+import 'dart:convert';
 
 import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
@@ -29,7 +32,7 @@ void main() {
     var specifiedType = FullType(StandardJsonValue);
     var serializersWithPlugin =
         (serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
-    var serialized = {
+    var serialized = json.decode(json.encode({
       'number': 3,
       'text': 'some text',
       'keyValues': {
@@ -45,20 +48,12 @@ void main() {
       'uniqueZoo': [
         {r'$': 'Cat', 'tail': false, 'legs': 3}
       ],
-    };
+    })) as Object;
 
     test('can be serialized', () {
       expect(
           serializersWithPlugin.serialize(data, specifiedType: specifiedType),
           serialized);
-    });
-
-    test('serializes to Map<String, Object>', () {
-      expect(
-          serializersWithPlugin
-              .serialize(data, specifiedType: specifiedType)
-              .runtimeType,
-          <String, Object>{}.runtimeType);
     });
 
     test('can be deserialized', () {
@@ -81,7 +76,7 @@ void main() {
     var specifiedType = FullType(StandardJsonValue);
     var serializersWithPlugin =
         (serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
-    var serialized = {
+    var serialized = json.decode(json.encode({
       'number': 3,
       'text': 'some text',
       'keyValues': {
@@ -92,7 +87,7 @@ void main() {
         'five': {'one': 1, 'two': 2},
       },
       'strings': null,
-    };
+    })) as Object;
 
     test('can be deserialized', () {
       expect(
